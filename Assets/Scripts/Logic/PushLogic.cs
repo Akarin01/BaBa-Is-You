@@ -4,12 +4,12 @@ public class PushLogic : LogicBase
 {
     public override void OnFixedUpdate(EntityBase entity)
     {
-        Debug.Log("PushLogic OnFixedUpdate");
+        
     }
 
     public override void OnUpdate(EntityBase entity)
     {
-        Debug.Log("PushLogic OnUpdate");
+        
     }
 
     public override bool TryInteract(EntityBase initiator, EntityBase receiver)

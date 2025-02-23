@@ -4,7 +4,7 @@ public class YouLogic : LogicBase
 {
     public override void OnFixedUpdate(EntityBase entity)
     {
-        Debug.Log("YouLogic OnFixedUpdate");
+        
     }
 
     public override void OnUpdate(EntityBase entity)
@@ -14,7 +14,6 @@ public class YouLogic : LogicBase
 
     public override bool TryInteract(EntityBase initiator, EntityBase receiver)
     {
-        Debug.Log("YouLogic TryInteract");
         return false;
     }
 
