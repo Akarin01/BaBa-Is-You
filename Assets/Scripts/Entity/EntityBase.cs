@@ -25,7 +25,6 @@ public abstract class EntityBase : MonoBehaviour
     protected Vector2Int m_targetPos;
     protected bool m_isMoving;
 
-
     protected virtual void Awake()
     {
         m_rb2D = GetComponent<Rigidbody2D>();
@@ -65,19 +64,32 @@ public abstract class EntityBase : MonoBehaviour
     public bool TryInteractByDir(Vector2 dir)
     {
         Vector2 rayStart = Position + dir * 0.5f;
-        RaycastHit2D hit = Physics2D.Raycast(rayStart, dir, 0.5f);
-        if (hit && hit.transform.TryGetComponent(out EntityBase receiver))
+        //RaycastHit2D hit = Physics2D.Raycast(rayStart, dir, 0.5f);
+        //if (hit && hit.transform.TryGetComponent(out EntityBase receiver))
+        //{
+        //    Debug.Log("Hit: " + hit.transform);
+        //    if (receiver.Logic.TryInteract(this, receiver))
+        //    {
+        //        return true;
+        //    }
+        //    return false;
+        //}
+        //else
+        //{
+        //    return true;
+        //}
+        RaycastHit2D[] hits = Physics2D.RaycastAll(rayStart, dir, 0.5f);
+        foreach (var hit in hits)
         {
-            if (receiver.Logic.TryInteract(this, receiver))
+            if (hit && hit.transform.TryGetComponent(out EntityBase receiver))
             {
-                return true;
+                if (!receiver.Logic.TryInteract(this, receiver))
+                {
+                    return false;
+                }
             }
-            return false;
         }
-        else
-        {
-            return true;
-        }
+        return true;
     }
 
     IEnumerator MoveToTarget()
