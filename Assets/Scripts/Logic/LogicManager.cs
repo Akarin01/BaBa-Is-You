@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEngine;
 
 /// <summary>
-/// 逻辑管理器类，利用享元模式复用逻辑类
+/// 逻辑管理器类
 /// </summary>
-public static class LogicManager
+public static class LogicManager : ScriptableObject
 {
+
     private static readonly Dictionary<Type, LogicBase> s_logicDict = new();
 
     public static LogicBase GetLogic<T>() where T : LogicBase, new()
@@ -36,4 +39,6 @@ public static class LogicManager
         s_logicDict.Add(t, logic);
         return logic;
     }
+
+    public static LogicBase GetDefaultLogic() => GetLogic<StopLogic>();
 }

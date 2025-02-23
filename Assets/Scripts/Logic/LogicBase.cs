@@ -1,7 +1,9 @@
+using UnityEngine;
+
 /// <summary>
 /// 逻辑基类，处理逻辑
 /// </summary>
-public abstract class LogicBase
+public abstract class LogicBase : ScriptableObject
 {
     public abstract void OnUpdate(EntityBase entity);
     public abstract void OnFixedUpdate(EntityBase entity);

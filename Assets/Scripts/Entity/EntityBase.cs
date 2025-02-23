@@ -1,4 +1,5 @@
 using System.Collections;
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -7,6 +8,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
 public abstract class EntityBase : MonoBehaviour
 {
+    public static event Action OnEntityArrived;
 
     public abstract LogicBase Logic { get; set; }
 
@@ -52,7 +54,7 @@ public abstract class EntityBase : MonoBehaviour
             return;
         }
         m_targetPos += Vector2Int.RoundToInt(dir);
-        StartCoroutine(Move());
+        StartCoroutine(MoveToTarget());
     }
 
     /// <summary>
@@ -78,7 +80,7 @@ public abstract class EntityBase : MonoBehaviour
         }
     }
 
-    IEnumerator Move()
+    IEnumerator MoveToTarget()
     {
         m_isMoving = true;
         while (Vector2.Distance(Position, m_targetPos) > 0.1f)
@@ -89,5 +91,6 @@ public abstract class EntityBase : MonoBehaviour
         // 到达目的地
         Position = m_targetPos;
         m_isMoving = false;
+        OnEntityArrived?.Invoke();
     }
 }
