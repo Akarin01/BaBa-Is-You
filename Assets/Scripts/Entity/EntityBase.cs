@@ -4,6 +4,7 @@ using UnityEngine;
 /// <summary>
 /// 实体基类，存储实体相关数据，并利用 LogicBase 类处理逻辑
 /// </summary>
+[RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
 public abstract class EntityBase : MonoBehaviour
 {
 
