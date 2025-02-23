@@ -6,5 +6,5 @@ public class PlayerEntity : EntityBase
         set => s_logic = value;
     }
 
-    private static LogicBase s_logic = new YouLogic();
+    private static LogicBase s_logic = LogicManager.GetDefaultLogic();
 }

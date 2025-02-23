@@ -6,5 +6,5 @@
         set => s_logic = value;
     }
 
-    private static LogicBase s_logic = new PushLogic();
+    private static LogicBase s_logic = LogicManager.GetDefaultLogic();
 }

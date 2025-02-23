@@ -1,9 +1,17 @@
 using UnityEngine;
+using System;
 
 [RequireComponent(typeof(Collider2D))]
 public class PropertyBlock : MonoBehaviour
 {
-    [SerializeField] private LogicBase m_logic = LogicManager.GetDefaultLogic();
+    [SerializeField] private string logicType;
+
+    private LogicBase m_logic;
+
+    private void Awake()
+    {
+        m_logic = LogicManager.GetLogic(logicType);
+    }
 
     public LogicBase GetLogic()
     {

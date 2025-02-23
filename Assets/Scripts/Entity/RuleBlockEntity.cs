@@ -11,5 +11,5 @@ public class RuleBlockEntity : EntityBase
         }
     }
 
-    private static LogicBase s_logic;
+    private static LogicBase s_logic = LogicManager.GetLogic<PushLogic>();
 }
