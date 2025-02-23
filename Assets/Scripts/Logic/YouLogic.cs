@@ -20,6 +20,11 @@ public class YouLogic : LogicBase
 
     private void GetInput(EntityBase entity)
     {
+        if (entity.IsMoving)
+        {
+            return;
+        }
+
         int h = 0;
         bool leftDown = Input.GetKeyDown(KeyCode.A);
         bool rightDown = Input.GetKeyDown(KeyCode.D);

@@ -59,7 +59,7 @@ public abstract class EntityBase : MonoBehaviour
     /// 尝试朝指定方向交互
     /// </summary>
     /// <param name="dir">指定方向</param>
-    /// <returns>如果交互成功或者没有可交互对象，则返回 true，否则返回 false</returns>
+    /// <returns>交互后是否可以朝该方向移动</returns>
     public bool TryInteractByDir(Vector2 dir)
     {
         Vector2 rayStart = Position + dir * 0.5f;
