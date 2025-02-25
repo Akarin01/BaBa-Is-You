@@ -722,7 +722,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8190918117005129957, guid: a71cffd278437604f9db70663a6a6bb2, type: 3}
       propertyPath: m_text
-      value: WIN
+      value: 'ST
+
+        OP'
       objectReference: {fileID: 0}
     - target: {fileID: 8190918117079789213, guid: a71cffd278437604f9db70663a6a6bb2, type: 3}
       propertyPath: m_Color.b
@@ -3009,11 +3011,9 @@ PrefabInstance:
       objectReference: {fileID: 1639757501}
     - target: {fileID: 8190240894264360673, guid: b743dc262887d7f4c8c9193b02828b39, type: 3}
       propertyPath: m_text
-      value: 'FL
+      value: 'WA
 
-        AG
-
-'
+        LL'
       objectReference: {fileID: 0}
     - target: {fileID: 8190240894264360673, guid: b743dc262887d7f4c8c9193b02828b39, type: 3}
       propertyPath: m_fontColor.b

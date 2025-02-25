@@ -14,6 +14,11 @@ public class IsBlock : MonoBehaviour
         UpdateRule();
     }
 
+    private void OnDisable()
+    {
+        EntityBase.OnEntityArrived -= UpdateRule;
+    }
+
     private void UpdateRule()
     {
         ModifyRule(new Vector2(-1, 0), ref m_prevLeftNoun);

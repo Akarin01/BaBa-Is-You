@@ -17,6 +17,7 @@ public class WinLogic : LogicBase
         // 游戏胜利
         if (initiator.Logic is YouLogic)
         {
+            GameEntry.UIManager.OpenUI<WinForm>();
             Debug.Log("Win!");
         }
         return true;
