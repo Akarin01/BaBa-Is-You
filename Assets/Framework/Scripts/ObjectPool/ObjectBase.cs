@@ -33,6 +33,11 @@
         }
 
         public virtual void OnUnspawn()
-        { }
+        {
+        }
+
+        public virtual void Release()
+        {
+        }
     }
 }

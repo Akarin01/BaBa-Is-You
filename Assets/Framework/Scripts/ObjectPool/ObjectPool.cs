@@ -20,6 +20,17 @@ namespace KitaFramework
             m_objectmaps.Add(obj.Target, objectInfo);
         }
 
+        public override void Shutdown()
+        {
+            foreach (var map in m_objectmaps)
+            {
+                map.Value.Release();
+            }
+
+            m_objectmaps.Clear();
+            m_targets.Clear();
+        }
+
         public T Spawn(string name)
         {
             if (!m_targets.ContainsKey(name))

@@ -34,6 +34,14 @@
                 m_isUsed = false;
                 m_target.OnUnspawn();
             }
+
+            /// <summary>
+            /// 释放资源
+            /// </summary>
+            public void Release()
+            {
+                m_target.Release();
+            }
         }
     }
 }
