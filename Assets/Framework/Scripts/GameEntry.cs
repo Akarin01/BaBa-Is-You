@@ -1,44 +1,35 @@
 using UnityEngine;
+using System.Collections.Generic;
+using System;
 
 namespace KitaFramework
 {
     public static class GameEntry
     {
-        private static UIManager m_uiManager;
-        private static ObjectPoolManager m_objectPoolManager;
+        private static Dictionary<Type, FrameworkManager> m_frameworkComponents = new();
 
-        public static UIManager UIManager
+        public static IUIManager UIManager => GetManager<UIManager>();
+
+        public static IObjectPoolManager ObjectPoolManager => GetManager<ObjectPoolManager>();
+
+        public static void RegisterManager<T>(T frameworkComponent) where T : FrameworkManager
         {
-            get
+            Type t = typeof(T);
+            if (!m_frameworkComponents.TryAdd(t, frameworkComponent))
             {
-                if (m_uiManager == null)
-                {
-                    Debug.LogError("UIManager is not registered.");
-                }
-                return m_uiManager;
+                Debug.LogError($"{frameworkComponent}组件已经存在");
             }
         }
 
-        public static ObjectPoolManager ObjectPoolManager
+        public static T GetManager<T>() where T : FrameworkManager
         {
-            get
+            Type t = typeof(T);
+            if (!m_frameworkComponents.ContainsKey(t))
             {
-                if (m_objectPoolManager == null)
-                {
-                    Debug.LogError("ObjectPoolManager is not registered.");
-                }
-                return m_objectPoolManager;
+                Debug.LogError($"{t}组件没有注册");
+                return null;
             }
-        }
-
-        public static void RegisterUIManager(UIManager uiManager)
-        {
-            m_uiManager = uiManager;
-        }
-
-        public static void RegisterObjectPoolManager(ObjectPoolManager objectPoolManager)
-        {
-            m_objectPoolManager = objectPoolManager;
+            return (T)m_frameworkComponents[t];
         }
     }
 }

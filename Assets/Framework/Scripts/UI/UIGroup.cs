@@ -43,5 +43,15 @@ namespace KitaFramework
                 node = node.Next;
             }
         }
+
+        public void Release()
+        {
+            foreach (var uiForm in m_uiForms)
+            {
+                uiForm.OnRelease();
+            }
+
+            m_uiForms.Clear();
+        }
     }
 }

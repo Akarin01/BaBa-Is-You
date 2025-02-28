@@ -3,20 +3,18 @@ using System.Collections.Generic;
 
 namespace KitaFramework
 {
-    public class UIManager : MonoBehaviour
+    public class UIManager : FrameworkManager, IUIManager
     {
         [SerializeField] private Transform m_uiFormInstancesRoot;
-
-        private const string DEFAULT_GROUP = "Default";
 
         private Dictionary<string, UIGroup> m_uiGroups;
         private IObjectPool<UIFormObject> m_objectPool;
 
-        private void Awake()
+        protected override void Awake()
         {
-            Init();
+            base.Awake();
 
-            GameEntry.RegisterUIManager(this);
+            GameEntry.RegisterManager(this);
         }
 
         private void Start()
@@ -47,16 +45,33 @@ namespace KitaFramework
             }
 
             // 添加到对应的 UIGroup
-            AddUIForm(DEFAULT_GROUP, uiForm);
+            AddUIForm(uiForm.GroupName, uiForm);
         }
 
-        public void CloseUI(UIForm uiform)
+        public void CloseUI(UIForm uiForm)
         {
             // 从对应的 UIGroup 移除 UIForm
-            RemoveUIForm(DEFAULT_GROUP, uiform);
+            RemoveUIForm(uiForm.GroupName, uiForm);
 
             // 销毁 UIForm 实例
-            m_objectPool.Unspawn(uiform);
+            m_objectPool.Unspawn(uiForm);
+        }
+
+        public override void Shutdown()
+        {
+            base.Shutdown();
+
+            foreach (var uiGroup in m_uiGroups)
+            {
+                uiGroup.Value.Release();
+            }
+
+            m_uiGroups.Clear();
+        }
+
+        protected override void Init()
+        {
+            m_uiGroups = new();
         }
 
         private void AddUIForm(string groupName, UIForm uiForm)
@@ -77,11 +92,6 @@ namespace KitaFramework
             }
 
             m_uiGroups[groupName].RemoveUIForm(uiForm);
-        }
-
-        private void Init()
-        {
-            m_uiGroups = new();
         }
     }
 }

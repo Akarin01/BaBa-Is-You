@@ -4,15 +4,15 @@ using System;
 
 namespace KitaFramework
 {
-    public class ObjectPoolManager : MonoBehaviour
+    public class ObjectPoolManager : FrameworkManager, IObjectPoolManager
     {
         private Dictionary<Type, ObjectPoolBase> m_objectPools;
 
-        private void Awake()
+        protected override void Awake()
         {
-            Init();
+            base.Awake();
 
-            GameEntry.RegisterObjectPoolManager(this);
+            GameEntry.RegisterManager(this);
         }
 
         public IObjectPool<T> GetObjectPool<T>() where T : ObjectBase
@@ -31,7 +31,19 @@ namespace KitaFramework
             return (IObjectPool<T>)objectPoolBase;
         }
 
-        private void Init()
+        public override void Shutdown()
+        {
+            base.Shutdown();
+
+            foreach (var objectPool in m_objectPools)
+            {
+                objectPool.Value.Shutdown();
+            }
+
+            m_objectPools.Clear();
+        }
+
+        protected override void Init()
         {
             m_objectPools = new();
         }

@@ -10,6 +10,8 @@ namespace KitaFramework
     [RequireComponent(typeof(CanvasGroup))]
     public class UIForm : MonoBehaviour
     {
+        [field: SerializeField] public string GroupName { get; set; } = Constant.DEFAULT_GROUP;
+
         private const float FADE_TIME = 0.3f;
 
         private CanvasGroup m_canvasGroup;
@@ -37,6 +39,11 @@ namespace KitaFramework
         }
 
         public virtual void OnResume()
+        {
+
+        }
+
+        public virtual void OnRelease()
         {
 
         }
