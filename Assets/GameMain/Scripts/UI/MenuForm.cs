@@ -1,6 +1,9 @@
 using KitaFramework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class MenuForm : UIForm
 {
@@ -18,8 +21,14 @@ public class MenuForm : UIForm
 
     public void OnQuitBtnClicked()
     {
-        Close(false);
         Debug.Log("Quit");
+
+        // ÍË³öÓÎÏ·
+#if UNITY_EDITOR
+        EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
     }
 
     public override void OnOpen()
