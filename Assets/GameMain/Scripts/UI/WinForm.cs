@@ -25,6 +25,13 @@ public class WinForm : UIForm
         Debug.Log("Menu");
     }
 
+    public override void OnInit()
+    {
+        base.OnInit();
+
+        Debug.Log("WinForm Init!");
+    }
+
     public override void OnOpen()
     {
         base.OnOpen();
@@ -45,5 +52,12 @@ public class WinForm : UIForm
     public override void OnResume()
     {
         Debug.Log("WinForm Resume!");
+    }
+
+    public override void OnRelease()
+    {
+        base.OnRelease();
+
+        Debug.Log("WinForm Release!");
     }
 }

@@ -31,6 +31,13 @@ public class MenuForm : UIForm
 #endif
     }
 
+    public override void OnInit()
+    {
+        base.OnInit();
+
+        Debug.Log("MenuForm Init!");
+    }
+
     public override void OnOpen()
     {
         base.OnOpen();
@@ -40,16 +47,29 @@ public class MenuForm : UIForm
 
     public override void OnClose()
     {
+        base.OnClose();
+
         Debug.Log("MenuForm Close!");
     }
 
     public override void OnPause()
     {
+        base.OnPause();
+
         Debug.Log("MenuForm Pause!");
     }
 
     public override void OnResume()
     {
+        base.OnResume();
+
         Debug.Log("MenuForm Resume!");
+    }
+
+    public override void OnRelease()
+    {
+        base.OnRelease();
+
+        Debug.Log("MenuForm Release!");
     }
 }

@@ -8,6 +8,13 @@ public class SettingForm : UIForm
         Close(false);
     }
 
+    public override void OnInit()
+    {
+        base.OnInit();
+
+        Debug.Log("SettingForm Init!");
+    }
+
     public override void OnOpen()
     {
         base.OnOpen();
@@ -28,5 +35,12 @@ public class SettingForm : UIForm
     public override void OnResume()
     {
         Debug.Log("SettingForm Resume!");
+    }
+
+    public override void OnRelease()
+    {
+        base.OnRelease();
+
+        Debug.Log("SettingForm Release!");
     }
 }
