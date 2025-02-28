@@ -9,8 +9,8 @@ public class MenuForm : UIForm
 {
     public void OnStartBtnClicked()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         Close(false);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         Debug.Log("Start");
     }
 

@@ -13,15 +13,15 @@ public class WinForm : UIForm
 
     public void OnRestartBtnClicked()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         Close(false);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         Debug.Log("Restart");
     }
 
     public void OnMenuBtnClicked()
     {
+        Close(true);
         SceneManager.LoadScene("Menu");
-        Close(false);
         Debug.Log("Menu");
     }
 
