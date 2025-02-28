@@ -14,7 +14,7 @@ public class YouLogic : LogicBase
 
     public override bool TryInteract(EntityBase initiator, EntityBase receiver)
     {
-        return false;
+        return initiator.Logic is not PushLogic;
     }
 
     private void GetInput(EntityBase entity)
