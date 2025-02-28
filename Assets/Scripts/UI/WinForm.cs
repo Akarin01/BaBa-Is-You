@@ -1,3 +1,4 @@
+using KitaFramework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 

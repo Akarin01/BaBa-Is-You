@@ -1,3 +1,4 @@
+using KitaFramework;
 using UnityEngine;
 
 public class SettingForm : UIForm

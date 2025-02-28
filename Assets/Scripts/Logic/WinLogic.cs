@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using KitaFramework;
+using UnityEngine;
 
 public class WinLogic : LogicBase
 {

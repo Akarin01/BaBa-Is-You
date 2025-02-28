@@ -1,44 +1,47 @@
 ﻿using System.Collections.Generic;
 
-public class UIGroup
+namespace KitaFramework
 {
-    private LinkedList<UIForm> m_uiForms = new();
-
-    public void AddUIForm(UIForm uiForm)
+    public class UIGroup
     {
-        if (m_uiForms.Count != 0)
-        {
-            // 暂停当前最上层的 UIForm
-            UIForm topUIForm = m_uiForms.First.Value;
-            topUIForm.OnPause();
-        }
-        m_uiForms.AddFirst(uiForm);
-        uiForm.OnOpen();
-    }
+        private LinkedList<UIForm> m_uiForms = new();
 
-    public void RemoveUIForm(UIForm uiForm)
-    {
-        var node = m_uiForms.First;
-        while (node != null)
+        public void AddUIForm(UIForm uiForm)
         {
-            UIForm form = node.Value;
-            if (form == uiForm)
+            if (m_uiForms.Count != 0)
             {
-                // 找到对应的 UIForm 实例
-                form.OnClose();
-
-                if (node.Next != null)
-                {
-                    // 恢复最上层的 UIForm
-                    form = node.Next.Value;
-                    form.OnResume();
-                }
-
-                m_uiForms.Remove(node);
-
-                return;
+                // 暂停当前最上层的 UIForm
+                UIForm topUIForm = m_uiForms.First.Value;
+                topUIForm.OnPause();
             }
-            node = node.Next;
+            m_uiForms.AddFirst(uiForm);
+            uiForm.OnOpen();
+        }
+
+        public void RemoveUIForm(UIForm uiForm)
+        {
+            var node = m_uiForms.First;
+            while (node != null)
+            {
+                UIForm form = node.Value;
+                if (form == uiForm)
+                {
+                    // 找到对应的 UIForm 实例
+                    form.OnClose();
+
+                    if (node.Next != null)
+                    {
+                        // 恢复最上层的 UIForm
+                        form = node.Next.Value;
+                        form.OnResume();
+                    }
+
+                    m_uiForms.Remove(node);
+
+                    return;
+                }
+                node = node.Next;
+            }
         }
     }
 }
