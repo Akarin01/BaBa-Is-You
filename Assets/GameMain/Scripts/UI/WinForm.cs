@@ -41,16 +41,22 @@ public class WinForm : UIForm
 
     public override void OnClose()
     {
+        base.OnClose();
+
         Debug.Log("WinForm Close!");
     }
 
     public override void OnPause()
     {
+        base.OnPause();
+
         Debug.Log("WinForm Pause!");
     }
 
     public override void OnResume()
     {
+        base.OnResume();
+
         Debug.Log("WinForm Resume!");
     }
 
