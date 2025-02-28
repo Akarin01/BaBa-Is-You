@@ -6,10 +6,11 @@
         set => s_logic = value;
     }
 
-    private static LogicBase s_logic = LogicManager.GetDefaultLogic();
+    private static LogicBase s_logic;
 
-    private void OnDisable()
+    protected override void Awake()
     {
+        base.Awake();
         s_logic = LogicManager.GetDefaultLogic();
     }
 }

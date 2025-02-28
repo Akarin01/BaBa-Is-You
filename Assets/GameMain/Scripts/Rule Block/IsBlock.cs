@@ -10,7 +10,10 @@ public class IsBlock : MonoBehaviour
     private void Awake()
     {
         EntityBase.OnEntityArrived += UpdateRule;
+    }
 
+    private void Start()
+    {
         UpdateRule();
     }
 

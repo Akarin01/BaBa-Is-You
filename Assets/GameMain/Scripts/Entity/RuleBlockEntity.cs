@@ -11,5 +11,11 @@ public class RuleBlockEntity : EntityBase
         }
     }
 
-    private static LogicBase s_logic = LogicManager.GetLogic<PushLogic>();
+    private static LogicBase s_logic;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        s_logic = LogicManager.GetLogic<PushLogic>();
+    }
 }
