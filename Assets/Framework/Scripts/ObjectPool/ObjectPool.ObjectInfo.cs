@@ -10,10 +10,10 @@
             private T m_target;
             private bool m_isUsed;
 
-            public ObjectInfo(T target, bool isUsed)
+            public ObjectInfo()
             {
-                m_target = target;
-                m_isUsed = isUsed;
+                m_target = null;
+                m_isUsed = false;
             }
 
             public string Name => m_target.Name;
@@ -21,6 +21,12 @@
             public T Target => m_target;
 
             public bool IsUsed() => m_isUsed;
+
+            public void Init(T target, bool isUsed)
+            {
+                m_target = target;
+                m_isUsed = isUsed;
+            }
 
             public T Spawn()
             {

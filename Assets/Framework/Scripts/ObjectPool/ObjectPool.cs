@@ -10,7 +10,8 @@ namespace KitaFramework
 
         public void Register(T obj, bool isUsed)
         {
-            ObjectInfo objectInfo = new ObjectInfo(obj, isUsed);
+            ObjectInfo objectInfo = new ObjectInfo();
+            objectInfo.Init(obj, isUsed);
             string name = obj.Name;
             if (!m_targets.ContainsKey(name))
             {
