@@ -17,5 +17,13 @@ namespace KitaFramework
 
             ((UIForm)Target).gameObject.SetActive(false);
         }
+
+        public override void Release()
+        {
+            base.Release();
+
+            // 销毁 Target GameObject
+            GameObject.Destroy(((UIForm)Target).gameObject);
+        }
     }
 }
