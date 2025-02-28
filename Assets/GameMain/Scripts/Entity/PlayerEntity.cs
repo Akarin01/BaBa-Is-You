@@ -7,4 +7,9 @@ public class PlayerEntity : EntityBase
     }
 
     private static LogicBase s_logic = LogicManager.GetDefaultLogic();
+
+    private void OnDisable()
+    {
+        s_logic = LogicManager.GetDefaultLogic();
+    }
 }
