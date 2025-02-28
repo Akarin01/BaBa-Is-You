@@ -17,7 +17,10 @@ namespace KitaFramework
                 m_targets[name] = new LinkedList<ObjectInfo>();
             }
             m_targets[name].AddFirst(objectInfo);
-            m_objectmaps.Add(obj.Target, objectInfo);
+            if (!m_objectmaps.TryAdd(obj.Target, objectInfo))
+            {
+                Debug.LogError($"对象 {obj.Target} 已注册， 禁止重复注册");
+            }
         }
 
         public override void Shutdown()
@@ -52,7 +55,7 @@ namespace KitaFramework
         {
             if (!m_objectmaps.ContainsKey(obj))
             {
-                Debug.LogError("该对象不在对象池中");
+                Debug.LogError("该对象不由对象池管理");
                 return;
             }
 
