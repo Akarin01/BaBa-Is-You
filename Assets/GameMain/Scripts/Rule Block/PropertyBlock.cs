@@ -1,20 +1,22 @@
 using UnityEngine;
-using System;
 
-[RequireComponent(typeof(Collider2D))]
-public class PropertyBlock : MonoBehaviour
+namespace BabaIsYou
 {
-    [SerializeField] private string logicType;
-
-    private LogicBase m_logic;
-
-    private void Awake()
+    [RequireComponent(typeof(Collider2D))]
+    public class PropertyBlock : MonoBehaviour
     {
-        m_logic = LogicManager.GetLogic(logicType);
-    }
+        [SerializeField] private string logicType;
 
-    public LogicBase GetLogic()
-    {
-        return m_logic;
+        private LogicBase m_logic;
+
+        private void Awake()
+        {
+            m_logic = LogicManager.GetLogic(logicType);
+        }
+
+        public LogicBase GetLogic()
+        {
+            return m_logic;
+        }
     }
 }

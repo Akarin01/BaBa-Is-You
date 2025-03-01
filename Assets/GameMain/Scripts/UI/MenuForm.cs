@@ -1,75 +1,80 @@
-using KitaFramework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using KitaFramework;
+
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-public class MenuForm : UIForm
+namespace BabaIsYou
 {
-    public void OnStartBtnClicked()
+    public class MenuForm : UIForm
     {
-        Close(false);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-        Debug.Log("Start");
-    }
+        public void OnStartBtnClicked()
+        {
+            Close(false);
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            Debug.Log("Start");
+        }
 
-    public void OnSettingBtnClicked()
-    {
-        GameEntry.UIManager.OpenUI<SettingForm>();
-    }
+        public void OnSettingBtnClicked()
+        {
+            GameEntry.UIManager.OpenUI<SettingForm>();
+        }
 
-    public void OnQuitBtnClicked()
-    {
-        Debug.Log("Quit");
+        public void OnQuitBtnClicked()
+        {
+            Debug.Log("Quit");
 
-        // 退出游戏
+            // 退出游戏
 #if UNITY_EDITOR
-        EditorApplication.isPlaying = false;
+            EditorApplication.isPlaying = false;
 #else
         Application.Quit();
 #endif
-    }
+        }
 
-    public override void OnInit()
-    {
-        base.OnInit();
+        public override void OnInit()
+        {
+            base.OnInit();
 
-        Debug.Log("MenuForm Init!");
-    }
+            Debug.Log("MenuForm Init!");
+        }
 
-    public override void OnOpen()
-    {
-        base.OnOpen();
+        public override void OnOpen()
+        {
+            base.OnOpen();
 
-        Debug.Log("MenuForm Open!");
-    }
+            Debug.Log("MenuForm Open!");
+        }
 
-    public override void OnClose()
-    {
-        base.OnClose();
+        public override void OnClose()
+        {
+            base.OnClose();
 
-        Debug.Log("MenuForm Close!");
-    }
+            Debug.Log("MenuForm Close!");
+        }
 
-    public override void OnPause()
-    {
-        base.OnPause();
+        public override void OnPause()
+        {
+            base.OnPause();
 
-        Debug.Log("MenuForm Pause!");
-    }
+            Debug.Log("MenuForm Pause!");
+        }
 
-    public override void OnResume()
-    {
-        base.OnResume();
+        public override void OnResume()
+        {
+            base.OnResume();
 
-        Debug.Log("MenuForm Resume!");
-    }
+            Debug.Log("MenuForm Resume!");
+        }
 
-    public override void OnRelease()
-    {
-        base.OnRelease();
+        public override void OnRelease()
+        {
+            base.OnRelease();
 
-        Debug.Log("MenuForm Release!");
+            Debug.Log("MenuForm Release!");
+        }
     }
 }

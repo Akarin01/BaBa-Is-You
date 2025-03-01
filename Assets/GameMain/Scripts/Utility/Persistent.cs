@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 
-public class Persistent : MonoBehaviour
+namespace BabaIsYou
 {
-    private void Awake()
+    public class Persistent : MonoBehaviour
     {
-        DontDestroyOnLoad(gameObject);
+        private void Awake()
+        {
+            DontDestroyOnLoad(gameObject);
+        }
     }
 }

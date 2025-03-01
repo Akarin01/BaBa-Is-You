@@ -1,12 +1,18 @@
-using KitaFramework;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class MenuSceneTest : MonoBehaviour
+namespace BabaIsYou
 {
-    private void Start()
+    public class MenuSceneTest : MonoBehaviour
     {
-        GameEntry.UIManager.OpenUI<MenuForm>();
+        private bool firstFrame = true;
+
+        private void Update()
+        {
+            if (firstFrame)
+            {
+                GameEntry.UIManager.OpenUI<MenuForm>();
+                firstFrame = false;
+            }
+        }
     }
 }

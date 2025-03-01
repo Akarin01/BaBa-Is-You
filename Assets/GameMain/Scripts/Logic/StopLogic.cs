@@ -1,17 +1,20 @@
-﻿public class StopLogic : LogicBase
+﻿namespace BabaIsYou
 {
-    public override void OnFixedUpdate(EntityBase entity)
+    public class StopLogic : LogicBase
     {
-        
-    }
+        public override void OnFixedUpdate(EntityBase entity)
+        {
 
-    public override void OnUpdate(EntityBase entity)
-    {
-        
-    }
+        }
 
-    public override bool TryInteract(EntityBase initiator, EntityBase receiver)
-    {
-        return false;
+        public override void OnUpdate(EntityBase entity)
+        {
+
+        }
+
+        public override bool TryInteract(EntityBase initiator, EntityBase receiver)
+        {
+            return false;
+        }
     }
 }

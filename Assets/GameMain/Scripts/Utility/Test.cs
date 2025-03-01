@@ -1,10 +1,13 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Test : MonoBehaviour
+namespace BabaIsYou
 {
-    void Start()
+    public class Test : MonoBehaviour
     {
-        SceneManager.LoadScene("Menu");
+        void Start()
+        {
+            SceneManager.LoadScene("Menu");
+        }
     }
 }

@@ -1,30 +1,33 @@
 ﻿using UnityEngine;
 
-public class PushLogic : LogicBase
+namespace BabaIsYou
 {
-    public override void OnFixedUpdate(EntityBase entity)
+    public class PushLogic : LogicBase
     {
-        
-    }
-
-    public override void OnUpdate(EntityBase entity)
-    {
-        
-    }
-
-    public override bool TryInteract(EntityBase initiator, EntityBase receiver)
-    {
-        if (receiver.IsMoving)
+        public override void OnFixedUpdate(EntityBase entity)
         {
-            return false;
+
         }
 
-        Vector2Int dir = Vector2Int.RoundToInt(receiver.Position - initiator.Position);
-        bool interacted = receiver.TryInteractByDir(dir);
-        if (interacted)
+        public override void OnUpdate(EntityBase entity)
         {
-            receiver.MoveByDir(dir);
+
         }
-        return interacted;
+
+        public override bool TryInteract(EntityBase initiator, EntityBase receiver)
+        {
+            if (receiver.IsMoving)
+            {
+                return false;
+            }
+
+            Vector2Int dir = Vector2Int.RoundToInt(receiver.Position - initiator.Position);
+            bool interacted = receiver.TryInteractByDir(dir);
+            if (interacted)
+            {
+                receiver.MoveByDir(dir);
+            }
+            return interacted;
+        }
     }
 }

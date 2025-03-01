@@ -1,46 +1,49 @@
 using KitaFramework;
 using UnityEngine;
 
-public class SettingForm : UIForm
+namespace BabaIsYou
 {
-    public void OnQuitBtnClicked()
+    public class SettingForm : UIForm
     {
-        Close(false);
-    }
+        public void OnQuitBtnClicked()
+        {
+            Close(false);
+        }
 
-    public override void OnInit()
-    {
-        base.OnInit();
+        public override void OnInit()
+        {
+            base.OnInit();
 
-        Debug.Log("SettingForm Init!");
-    }
+            Debug.Log("SettingForm Init!");
+        }
 
-    public override void OnOpen()
-    {
-        base.OnOpen();
+        public override void OnOpen()
+        {
+            base.OnOpen();
 
-        Debug.Log("SettingForm Open!");
-    }
+            Debug.Log("SettingForm Open!");
+        }
 
-    public override void OnClose()
-    {
-        Debug.Log("SettingForm Close!");
-    }
+        public override void OnClose()
+        {
+            Debug.Log("SettingForm Close!");
+        }
 
-    public override void OnPause()
-    {
-        Debug.Log("SettingForm Pause!");
-    }
+        public override void OnPause()
+        {
+            Debug.Log("SettingForm Pause!");
+        }
 
-    public override void OnResume()
-    {
-        Debug.Log("SettingForm Resume!");
-    }
+        public override void OnResume()
+        {
+            Debug.Log("SettingForm Resume!");
+        }
 
-    public override void OnRelease()
-    {
-        base.OnRelease();
+        public override void OnRelease()
+        {
+            base.OnRelease();
 
-        Debug.Log("SettingForm Release!");
+            Debug.Log("SettingForm Release!");
+        }
     }
 }

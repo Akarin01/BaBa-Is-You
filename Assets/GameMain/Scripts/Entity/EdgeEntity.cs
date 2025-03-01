@@ -1,20 +1,23 @@
 ﻿using UnityEngine;
 
-public class EdgeEntity : EntityBase
+namespace BabaIsYou
 {
-    public override LogicBase Logic
+    public class EdgeEntity : EntityBase
     {
-        get => s_logic;
-        set
+        public override LogicBase Logic
         {
-            Debug.LogError("Edge Entity can't change logic");
+            get => s_logic;
+            set
+            {
+                Debug.LogError("Edge Entity can't change logic");
+            }
         }
-    }
-    private static LogicBase s_logic;
+        private static LogicBase s_logic;
 
-    protected override void Awake()
-    {
-        base.Awake();
-        s_logic = LogicManager.GetLogic<StopLogic>();
+        protected override void Awake()
+        {
+            base.Awake();
+            s_logic = LogicManager.GetLogic<StopLogic>();
+        }
     }
 }

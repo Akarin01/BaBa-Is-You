@@ -1,21 +1,24 @@
 ﻿using UnityEngine;
 
-public class RuleBlockEntity : EntityBase
+namespace BabaIsYou
 {
-    public override LogicBase Logic
+    public class RuleBlockEntity : EntityBase
     {
-        get => s_logic;
-        set
+        public override LogicBase Logic
         {
-            Debug.LogError("Rule Block can't change logic");
+            get => s_logic;
+            set
+            {
+                Debug.LogError("Rule Block can't change logic");
+            }
         }
-    }
 
-    private static LogicBase s_logic;
+        private static LogicBase s_logic;
 
-    protected override void Awake()
-    {
-        base.Awake();
-        s_logic = LogicManager.GetLogic<PushLogic>();
+        protected override void Awake()
+        {
+            base.Awake();
+            s_logic = LogicManager.GetLogic<PushLogic>();
+        }
     }
 }

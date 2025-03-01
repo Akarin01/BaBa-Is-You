@@ -1,51 +1,56 @@
 using System;
 using System.Collections.Generic;
 
-/// <summary>
-/// 逻辑管理器类，利用享元模式复用逻辑类
-/// </summary>
-public class LogicManager
+namespace BabaIsYou
 {
-    private static readonly Dictionary<Type, LogicBase> s_logicDict = new();
-
-    public static LogicBase GetLogic<T>() where T : LogicBase, new()
+    /// <summary>
+    /// 逻辑管理器类，利用享元模式复用逻辑类
+    /// </summary>
+    public class LogicManager
     {
-        Type t = typeof(T);
-        if (s_logicDict.ContainsKey(t))
-        {
-            return s_logicDict[t];
-        }
-        // 创建新实例
-        LogicBase logic = Activator.CreateInstance<T>();
-        s_logicDict.Add(t, logic);
-        return logic;
-    }
+        private static readonly Dictionary<Type, LogicBase> s_logicDict = new();
 
-    public static LogicBase GetLogic(Type t)
-    {
-        if (!t.IsSubclassOf(typeof(LogicBase)))
+        public static LogicBase GetLogic<T>() where T : LogicBase, new()
         {
-            throw new ArgumentException("Type must be subclass of LogicBase");
+            Type t = typeof(T);
+            if (s_logicDict.ContainsKey(t))
+            {
+                return s_logicDict[t];
+            }
+            // 创建新实例
+            LogicBase logic = Activator.CreateInstance<T>();
+            s_logicDict.Add(t, logic);
+            return logic;
         }
-        if (s_logicDict.ContainsKey(t))
-        {
-            return s_logicDict[t];
-        }
-        // 创建新实例
-        LogicBase logic = Activator.CreateInstance(t) as LogicBase;
-        s_logicDict.Add(t, logic);
-        return logic;
-    }
 
-    public static LogicBase GetLogic(string typeStr)
-    {
-        Type t = Type.GetType(typeStr);
-        if (t == null)
+        public static LogicBase GetLogic(Type t)
         {
-            throw new ArgumentException("Type not found");
+            if (!t.IsSubclassOf(typeof(LogicBase)))
+            {
+                throw new ArgumentException("Type must be subclass of LogicBase");
+            }
+            if (s_logicDict.ContainsKey(t))
+            {
+                return s_logicDict[t];
+            }
+            // 创建新实例
+            LogicBase logic = Activator.CreateInstance(t) as LogicBase;
+            s_logicDict.Add(t, logic);
+            return logic;
         }
-        return GetLogic(t);
-    }
 
-    public static LogicBase GetDefaultLogic() => GetLogic<DefaultLogic>();
+        public static LogicBase GetLogic(string typeStr)
+        {
+            string namespaceName = typeof(LogicBase).Namespace;
+            typeStr = string.Concat(namespaceName, ".", typeStr);
+            Type t = Type.GetType(typeStr);
+            if (t == null)
+            {
+                throw new ArgumentException($"Type {typeStr} not found");
+            }
+            return GetLogic(t);
+        }
+
+        public static LogicBase GetDefaultLogic() => GetLogic<DefaultLogic>();
+    }
 }

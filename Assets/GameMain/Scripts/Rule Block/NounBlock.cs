@@ -1,12 +1,15 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Collider2D))]
-public class NounBlock : MonoBehaviour
+namespace BabaIsYou
 {
-    [SerializeField] private EntityBase m_entity;
-
-    public void SetEntityLogic(LogicBase logic)
+    [RequireComponent(typeof(Collider2D))]
+    public class NounBlock : MonoBehaviour
     {
-        m_entity.Logic = logic;
+        [SerializeField] private EntityBase m_entity;
+
+        public void SetEntityLogic(LogicBase logic)
+        {
+            m_entity.Logic = logic;
+        }
     }
 }

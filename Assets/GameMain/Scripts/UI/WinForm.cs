@@ -2,68 +2,71 @@ using KitaFramework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class WinForm : UIForm
+namespace BabaIsYou
 {
-    public void OnNextBtnClicked()
+    public class WinForm : UIForm
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-        Close(false);
-        Debug.Log("Next");
-    }
+        public void OnNextBtnClicked()
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            Close(false);
+            Debug.Log("Next");
+        }
 
-    public void OnRestartBtnClicked()
-    {
-        Close(false);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        Debug.Log("Restart");
-    }
+        public void OnRestartBtnClicked()
+        {
+            Close(false);
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            Debug.Log("Restart");
+        }
 
-    public void OnMenuBtnClicked()
-    {
-        Close(true);
-        SceneManager.LoadScene("Menu");
-        Debug.Log("Menu");
-    }
+        public void OnMenuBtnClicked()
+        {
+            Close(true);
+            SceneManager.LoadScene("Menu");
+            Debug.Log("Menu");
+        }
 
-    public override void OnInit()
-    {
-        base.OnInit();
+        public override void OnInit()
+        {
+            base.OnInit();
 
-        Debug.Log("WinForm Init!");
-    }
+            Debug.Log("WinForm Init!");
+        }
 
-    public override void OnOpen()
-    {
-        base.OnOpen();
+        public override void OnOpen()
+        {
+            base.OnOpen();
 
-        Debug.Log("WinForm Open!");
-    }
+            Debug.Log("WinForm Open!");
+        }
 
-    public override void OnClose()
-    {
-        base.OnClose();
+        public override void OnClose()
+        {
+            base.OnClose();
 
-        Debug.Log("WinForm Close!");
-    }
+            Debug.Log("WinForm Close!");
+        }
 
-    public override void OnPause()
-    {
-        base.OnPause();
+        public override void OnPause()
+        {
+            base.OnPause();
 
-        Debug.Log("WinForm Pause!");
-    }
+            Debug.Log("WinForm Pause!");
+        }
 
-    public override void OnResume()
-    {
-        base.OnResume();
+        public override void OnResume()
+        {
+            base.OnResume();
 
-        Debug.Log("WinForm Resume!");
-    }
+            Debug.Log("WinForm Resume!");
+        }
 
-    public override void OnRelease()
-    {
-        base.OnRelease();
+        public override void OnRelease()
+        {
+            base.OnRelease();
 
-        Debug.Log("WinForm Release!");
+            Debug.Log("WinForm Release!");
+        }
     }
 }

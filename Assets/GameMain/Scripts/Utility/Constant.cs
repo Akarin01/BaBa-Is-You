@@ -1,6 +1,9 @@
-﻿public static class Constant
+﻿namespace BabaIsYou
 {
-    public const float MOVE_SPEED = 5f;
+    public static class Constant
+    {
+        public const float MOVE_SPEED = 5f;
 
-    public const string DEFAULT_GROUP = "Default";
+        public const string DEFAULT_GROUP = "Default";
+    }
 }
