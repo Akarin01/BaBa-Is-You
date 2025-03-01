@@ -9,19 +9,7 @@ namespace KitaFramework
     {
         protected virtual void Awake()
         {
-            Init();
+            FrameworkEntry.RegisterManager(this);
         }
-
-        /// <summary>
-        /// 初始化
-        /// </summary>
-        protected virtual void Init()
-        { }
-
-        /// <summary>
-        /// 释放资源
-        /// </summary>
-        public virtual void Shutdown()
-        { }
     }
 }

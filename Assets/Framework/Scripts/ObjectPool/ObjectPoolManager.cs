@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 using System;
 
 namespace KitaFramework
 {
-    public class ObjectPoolManager : FrameworkManager, IObjectPoolManager
+    public class ObjectPoolManager : FrameworkManager
     {
         private Dictionary<Type, ObjectPoolBase> m_objectPools;
 
@@ -12,7 +11,7 @@ namespace KitaFramework
         {
             base.Awake();
 
-            GameEntry.RegisterManager(this);
+            m_objectPools = new();
         }
 
         public IObjectPool<T> GetObjectPool<T>() where T : ObjectBase
@@ -31,21 +30,14 @@ namespace KitaFramework
             return (IObjectPool<T>)objectPoolBase;
         }
 
-        public override void Shutdown()
+        public void Release()
         {
-            base.Shutdown();
-
             foreach (var objectPool in m_objectPools)
             {
                 objectPool.Value.Shutdown();
             }
 
             m_objectPools.Clear();
-        }
-
-        protected override void Init()
-        {
-            m_objectPools = new();
         }
     }
 }

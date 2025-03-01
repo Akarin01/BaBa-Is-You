@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using BabaIsYou;
+using System.Collections;
 using UnityEngine;
 
 namespace KitaFramework
@@ -15,10 +16,12 @@ namespace KitaFramework
         private const float FADE_TIME = 0.3f;
 
         private CanvasGroup m_canvasGroup;
+        private UIManager m_manager;
 
         public virtual void OnInit()
         {
             m_canvasGroup = GetComponent<CanvasGroup>();
+            m_manager = FrameworkEntry.GetManager<UIManager>();
         }
 
         public virtual void OnOpen()
@@ -64,14 +67,14 @@ namespace KitaFramework
         private IEnumerator CloseCo()
         {
             yield return FadeToAlpha(0f, FADE_TIME);
-            GameEntry.UIManager.CloseUI(this);
+            m_manager.CloseUI(this);
         }
 
         protected void Close(bool immediate)
         {
             if (immediate)
             {
-                GameEntry.UIManager.CloseUI(this);
+                m_manager.CloseUI(this);
             }
             else
             {

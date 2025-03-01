@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace KitaFramework
 {
-    public class UIManager : FrameworkManager, IUIManager
+    public class UIManager : FrameworkManager
     {
         [SerializeField] private Transform m_uiFormInstancesRoot;
 
@@ -14,12 +14,12 @@ namespace KitaFramework
         {
             base.Awake();
 
-            GameEntry.RegisterManager(this);
+            m_uiGroups = new();
         }
 
         private void Start()
         {
-            m_objectPool = GameEntry.ObjectPoolManager.CreateObjectPool<UIFormObject>();
+            m_objectPool = FrameworkEntry.GetManager<ObjectPoolManager>()?.CreateObjectPool<UIFormObject>();
         }
 
         public void OpenUI<T>() where T : UIForm
@@ -57,21 +57,14 @@ namespace KitaFramework
             m_objectPool.Unspawn(uiForm);
         }
 
-        public override void Shutdown()
+        public void Release()
         {
-            base.Shutdown();
-
             foreach (var uiGroup in m_uiGroups)
             {
                 uiGroup.Value.Release();
             }
 
             m_uiGroups.Clear();
-        }
-
-        protected override void Init()
-        {
-            m_uiGroups = new();
         }
 
         private void AddUIForm(string groupName, UIForm uiForm)
