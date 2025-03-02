@@ -22,6 +22,11 @@ namespace KitaFramework
             return (IObjectPool<T>)objectPoolBase;
         }
 
+        public bool HasObjectPool<T>() where T : ObjectBase
+        {
+            return m_objectPools.ContainsKey(typeof(T));
+        }
+
         public IObjectPool<T> CreateObjectPool<T>() where T : ObjectBase
         {
             Type t = typeof(T);
