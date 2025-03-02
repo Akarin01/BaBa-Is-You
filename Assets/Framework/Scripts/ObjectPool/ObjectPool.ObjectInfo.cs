@@ -26,6 +26,11 @@
             {
                 m_target = target;
                 m_isUsed = isUsed;
+
+                if (isUsed)
+                {
+                    m_target.OnSpawn();
+                }
             }
 
             public T Spawn()

@@ -8,6 +8,7 @@ namespace KitaFramework
         {
             base.OnSpawn();
 
+            Debug.Log("UIForm OnSpawn");
             ((UIForm)Target).gameObject.SetActive(true);
         }
 
@@ -15,6 +16,7 @@ namespace KitaFramework
         {
             base.OnUnspawn();
 
+            Debug.Log("UIForm OnUnspawn");
             ((UIForm)Target).gameObject.SetActive(false);
         }
 
