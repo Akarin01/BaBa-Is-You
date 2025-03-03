@@ -59,6 +59,8 @@ namespace KitaFramework
 
         public void Release()
         {
+            FrameworkEntry.GetManager<ObjectPoolManager>().DestroyObjectPool<UIFormObject>();
+
             foreach (var uiGroup in m_uiGroups)
             {
                 uiGroup.Value.Release();

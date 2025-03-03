@@ -35,6 +35,16 @@ namespace KitaFramework
             return (IObjectPool<T>)objectPoolBase;
         }
 
+        public bool DestroyObjectPool<T>() where T : ObjectBase
+        {
+            if (m_objectPools.TryGetValue(typeof(T), out ObjectPoolBase objectPoolBase))
+            {
+                objectPoolBase.Shutdown();
+                return m_objectPools.Remove(typeof(T));
+            }
+            return false;
+        }
+
         public void Release()
         {
             foreach (var objectPool in m_objectPools)
