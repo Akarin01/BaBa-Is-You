@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using BabaIsYou;
 
 namespace KitaFramework
 {
@@ -8,7 +9,7 @@ namespace KitaFramework
     /// UI 窗体基类，负责管理 UI 生命周期逻辑
     /// </summary>
     [RequireComponent(typeof(CanvasGroup))]
-    public class UIForm : MonoBehaviour
+    public abstract class UIForm : MonoBehaviour
     {
         [field: SerializeField] public string GroupName { get; set; } = Constant.DEFAULT_GROUP;
 
