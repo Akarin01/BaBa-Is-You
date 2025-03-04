@@ -75,5 +75,16 @@ namespace KitaFramework
             }
             return m_fsms.Remove(key);
         }
+
+        public override void Shutdown()
+        {
+            foreach (var fsm in m_fsms.Values)
+            {
+                fsm.Shutdown();
+            }
+
+            m_fsms = null;
+            m_tempFsms = null;
+        }
     }
 }

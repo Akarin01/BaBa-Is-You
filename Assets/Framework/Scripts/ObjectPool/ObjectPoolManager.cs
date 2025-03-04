@@ -45,14 +45,13 @@ namespace KitaFramework
             return false;
         }
 
-        public void Release()
+        public override void Shutdown()
         {
             foreach (var objectPool in m_objectPools)
             {
                 objectPool.Value.Shutdown();
             }
-
-            m_objectPools.Clear();
+            m_objectPools = null;
         }
     }
 }

@@ -11,5 +11,7 @@ namespace KitaFramework
         {
             FrameworkEntry.RegisterManager(this);
         }
+
+        public abstract void Shutdown();
     }
 }

@@ -56,17 +56,16 @@ namespace KitaFramework
             // Ïú»Ù UIForm ÊµÀý
             m_objectPool.Unspawn(uiForm);
         }
-
-        public void Release()
+        public override void Shutdown()
         {
-            FrameworkEntry.GetManager<ObjectPoolManager>().DestroyObjectPool<UIFormObject>();
-
             foreach (var uiGroup in m_uiGroups)
             {
                 uiGroup.Value.Release();
             }
+            FrameworkEntry.GetManager<ObjectPoolManager>()?.DestroyObjectPool<UIFormObject>();
 
-            m_uiGroups.Clear();
+            m_uiGroups = null;
+            m_objectPool = null;
         }
 
         private void AddUIForm(string groupName, UIForm uiForm)

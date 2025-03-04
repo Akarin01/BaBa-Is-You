@@ -45,5 +45,13 @@ namespace KitaFramework
             Debug.LogError($"Framework Manager {t} is not registered");
             return null;
         }
+
+        public static void Shutdown()
+        {
+            foreach (var manager in m_frameworkManagers)
+            {
+                manager.Shutdown();
+            }
+        }
     }
 }
