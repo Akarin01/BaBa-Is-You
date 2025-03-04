@@ -51,7 +51,7 @@ namespace KitaFramework
             {
                 objectPool.Value.Shutdown();
             }
-            m_objectPools = null;
+            m_objectPools.Clear();
         }
     }
 }

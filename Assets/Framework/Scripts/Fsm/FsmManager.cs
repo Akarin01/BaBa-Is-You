@@ -83,8 +83,8 @@ namespace KitaFramework
                 fsm.Shutdown();
             }
 
-            m_fsms = null;
-            m_tempFsms = null;
+            m_fsms.Clear();
+            m_tempFsms.Clear();
         }
     }
 }

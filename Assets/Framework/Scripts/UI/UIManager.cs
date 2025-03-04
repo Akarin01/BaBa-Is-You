@@ -64,7 +64,7 @@ namespace KitaFramework
             }
             FrameworkEntry.GetManager<ObjectPoolManager>()?.DestroyObjectPool<UIFormObject>();
 
-            m_uiGroups = null;
+            m_uiGroups.Clear();
             m_objectPool = null;
         }
 
