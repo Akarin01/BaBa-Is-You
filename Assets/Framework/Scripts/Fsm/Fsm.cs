@@ -15,7 +15,7 @@ namespace KitaFramework
 
         public T Owner => m_owner;
 
-        public override string Name => m_name;
+        public string Name => m_name;
 
         public override bool IsRunning => m_isRunning;
 

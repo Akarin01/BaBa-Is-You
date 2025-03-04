@@ -6,11 +6,6 @@
     public abstract class FsmBase
     {
         /// <summary>
-        /// 状态机的名字
-        /// </summary>
-        public abstract string Name { get; }
-
-        /// <summary>
         /// 状态机是否正在运行
         /// </summary>
         public abstract bool IsRunning { get; }
