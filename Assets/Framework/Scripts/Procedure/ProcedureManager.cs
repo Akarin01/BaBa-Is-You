@@ -45,7 +45,7 @@ namespace KitaFramework
 
         public override void Shutdown()
         {
-            
+            m_fsmManager.RemoveFsm<IFsm<ProcedureManager>>(m_procedureFsm.Name);
         }
 
         private Type[] GetProceduraTypes()
