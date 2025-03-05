@@ -5,7 +5,7 @@ namespace BabaIsYou
 {
     public class ProcedureMenu : ProcedureBase
     {
-        private bool m_startGame = false;
+        private bool m_startGame;
 
         public void StartGame()
         {
@@ -16,6 +16,8 @@ namespace BabaIsYou
         {
             base.OnEnter(procedureOwner);
 
+            m_startGame = false;
+
             GameEntry.UIManager.OpenUI<MenuForm>(this);
         }
 
@@ -25,16 +27,9 @@ namespace BabaIsYou
 
             if (m_startGame)
             {
-                SceneManager.LoadScene("Level_1");
-                ChangeState<ProcedureMain>(procedureOwner);
+                procedureOwner.SetData("NextScene", Config.FIRST_LEVEL_SCENE_INDEX);
+                ChangeState<ProcedureChangeScene>(procedureOwner);
             }
-        }
-
-        protected internal override void OnExit(IFsm<ProcedureManager> procedureOwner, bool isShutdown)
-        {
-            m_startGame = false;
-
-            base.OnExit(procedureOwner, isShutdown);
         }
     }
 }

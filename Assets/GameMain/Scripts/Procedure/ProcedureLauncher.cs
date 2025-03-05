@@ -9,8 +9,8 @@ namespace BabaIsYou
         {
             base.OnEnter(procedureOwner);
 
-            SceneManager.LoadScene("Menu");
-            ChangeState<ProcedureMenu>(procedureOwner);
+            procedureOwner.SetData("NextScene", Config.MENU_SCENE_INDEX);
+            ChangeState<ProcedureChangeScene>(procedureOwner);
         }
     }
 }

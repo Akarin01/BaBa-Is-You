@@ -14,7 +14,7 @@ namespace BabaIsYou
             GotoMenu,
         }
 
-        private Choice m_choice = Choice.None;
+        private Choice m_choice;
 
         public void NextLevel()
         {
@@ -36,6 +36,8 @@ namespace BabaIsYou
         {
             base.OnEnter(procedureOwner);
 
+            m_choice = Choice.None;
+
             GameEntry.UIManager.OpenUI<WinForm>(this);
         }
 
@@ -43,41 +45,30 @@ namespace BabaIsYou
         {
             base.OnUpdate(procedureOwner, deltaTime, realDeltaTime);
 
+            int nextSceneIndex = -1;
             switch (m_choice)
             {
                 case Choice.None:
                     return;
                 case Choice.Next:
-                    int nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
-                    if (nextSceneIndex == SceneManager.sceneCountInBuildSettings)
+                    nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
+                    if (nextSceneIndex >= SceneManager.sceneCountInBuildSettings)
                     {
-                        SceneManager.LoadScene("Menu");
-                        ChangeState<ProcedureMenu>(procedureOwner);
-                    }
-                    else
-                    {
-                        SceneManager.LoadScene(nextSceneIndex);
-                        ChangeState<ProcedureMain>(procedureOwner);
+                        nextSceneIndex = Config.MENU_SCENE_INDEX;
                     }
                     break;
                 case Choice.Restart:
-                    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-                    ChangeState<ProcedureMain>(procedureOwner);
+                    nextSceneIndex = SceneManager.GetActiveScene().buildIndex;
                     break;
                 case Choice.GotoMenu:
-                    SceneManager.LoadScene("Menu");
-                    ChangeState<ProcedureMenu>(procedureOwner);
+                    nextSceneIndex = Config.MENU_SCENE_INDEX;
                     break;
                 default:
                     break;
             }
-        }
 
-        protected internal override void OnExit(IFsm<ProcedureManager> procedureOwner, bool isShutdown)
-        {
-            m_choice = Choice.None;
-
-            base.OnExit(procedureOwner, isShutdown);
+            procedureOwner.SetData("NextScene", nextSceneIndex);
+            ChangeState<ProcedureChangeScene>(procedureOwner);
         }
     }
 }
