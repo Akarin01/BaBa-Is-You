@@ -169,7 +169,7 @@ namespace KitaFramework
             {
                 throw new ArgumentNullException(nameof(stateType));
             }
-            if (!typeof(FsmState<T>).IsAssignableFrom(stateType))
+            if (!stateType.IsAssignableFrom(typeof(FsmState<T>)))
             {
                 throw new ArgumentException($"{stateType} is invalid");
             }
