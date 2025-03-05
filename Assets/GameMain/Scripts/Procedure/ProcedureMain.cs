@@ -4,25 +4,27 @@ namespace BabaIsYou
 {
     public class ProcedureMain : ProcedureBase
     {
-        private bool m_win = false;
+        private bool m_isGameWon;
 
-        private void Win()
+        private void WinGame()
         {
-            m_win = true;
+            m_isGameWon = true;
         }
 
         protected internal override void OnEnter(IFsm<ProcedureManager> procedureOwner)
         {
             base.OnEnter(procedureOwner);
 
-            GameMode.OnGameWin += Win;
+            m_isGameWon = false;
+
+            GameMode.OnGameWin += WinGame;
         }
 
         protected internal override void OnUpdate(IFsm<ProcedureManager> procedureOwner, float deltaTime, float realDeltaTime)
         {
             base.OnUpdate(procedureOwner, deltaTime, realDeltaTime);
 
-            if (m_win)
+            if (m_isGameWon)
             {
                 ChangeState<ProcedureWin>(procedureOwner);
             }
@@ -30,9 +32,7 @@ namespace BabaIsYou
 
         protected internal override void OnExit(IFsm<ProcedureManager> procedureOwner, bool isShutdown)
         {
-            GameMode.OnGameWin -= Win;
-
-            m_win = false;
+            GameMode.OnGameWin -= WinGame;
 
             base.OnExit(procedureOwner, isShutdown);
         }
