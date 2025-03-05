@@ -6,24 +6,32 @@ namespace BabaIsYou
 {
     public class WinForm : UIForm
     {
+        private ProcedureWin m_procedureWin;
+
         public void OnNextBtnClicked()
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            m_procedureWin.NextLevel();
+
             Close(false);
+
             Debug.Log("Next");
         }
 
         public void OnRestartBtnClicked()
         {
+            m_procedureWin.Restart();
+
             Close(false);
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
             Debug.Log("Restart");
         }
 
         public void OnMenuBtnClicked()
         {
+            m_procedureWin.GotoMenu();
+
             Close(true);
-            SceneManager.LoadScene("Menu");
+
             Debug.Log("Menu");
         }
 
@@ -38,12 +46,16 @@ namespace BabaIsYou
         {
             base.OnOpen(data);
 
+            m_procedureWin = (ProcedureWin)data;
+
             Debug.Log("WinForm Open!");
         }
 
         public override void OnClose(object data)
         {
             Debug.Log("WinForm Close!");
+
+            m_procedureWin = null;
 
             base.OnClose(data);
         }

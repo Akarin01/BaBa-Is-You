@@ -10,7 +10,6 @@ namespace BabaIsYou
             base.OnEnter(procedureOwner);
 
             SceneManager.LoadScene("Menu");
-
             ChangeState<ProcedureMenu>(procedureOwner);
         }
     }

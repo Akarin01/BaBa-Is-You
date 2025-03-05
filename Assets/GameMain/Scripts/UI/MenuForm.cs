@@ -11,10 +11,14 @@ namespace BabaIsYou
 {
     public class MenuForm : UIForm
     {
+        private ProcedureMenu m_procedureMenu;
+
         public void OnStartBtnClicked()
         {
             Close(false);
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+
+            m_procedureMenu.StartGame();
+
             Debug.Log("Start");
         }
 
@@ -46,12 +50,16 @@ namespace BabaIsYou
         {
             base.OnOpen(data);
 
+            m_procedureMenu = (ProcedureMenu)data;
+
             Debug.Log("MenuForm Open!");
         }
 
         public override void OnClose(object data)
         {
             Debug.Log("MenuForm Close!");
+
+            m_procedureMenu = null;
 
             base.OnClose(data);
         }
