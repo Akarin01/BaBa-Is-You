@@ -15,9 +15,9 @@ namespace BabaIsYou
 
         public void OnStartBtnClicked()
         {
-            Close(false);
-
             m_procedureMenu.StartGame();
+
+            Close(false);
 
             Debug.Log("Start");
         }
