@@ -22,7 +22,7 @@ namespace KitaFramework
             m_objectPool = FrameworkEntry.GetManager<ObjectPoolManager>()?.CreateObjectPool<UIFormObject>();
         }
 
-        public void OpenUI<T>() where T : UIForm
+        public void OpenUI<T>(object data = null) where T : UIForm
         {
             // 创建 UIForm 实例
             string name = typeof(T).Name;
@@ -45,13 +45,13 @@ namespace KitaFramework
             }
 
             // 添加到对应的 UIGroup
-            AddUIForm(uiForm.GroupName, uiForm);
+            AddUIForm(uiForm.GroupName, uiForm, data);
         }
 
-        public void CloseUI(UIForm uiForm)
+        public void CloseUI(UIForm uiForm, object data = null)
         {
             // 从对应的 UIGroup 移除 UIForm
-            RemoveUIForm(uiForm.GroupName, uiForm);
+            RemoveUIForm(uiForm.GroupName, uiForm, data);
 
             // 销毁 UIForm 实例
             m_objectPool.Unspawn(uiForm);
@@ -68,16 +68,16 @@ namespace KitaFramework
             m_objectPool = null;
         }
 
-        private void AddUIForm(string groupName, UIForm uiForm)
+        private void AddUIForm(string groupName, UIForm uiForm, object data)
         {
             if (!m_uiGroups.ContainsKey(groupName))
             {
                 m_uiGroups.Add(groupName, new UIGroup());
             }
-            m_uiGroups[groupName].AddUIForm(uiForm);
+            m_uiGroups[groupName].AddUIForm(uiForm, data);
         }
 
-        private void RemoveUIForm(string groupName, UIForm uiForm)
+        private void RemoveUIForm(string groupName, UIForm uiForm, object data)
         {
             if (!m_uiGroups.ContainsKey(groupName))
             {
@@ -85,7 +85,7 @@ namespace KitaFramework
                 return;
             }
 
-            m_uiGroups[groupName].RemoveUIForm(uiForm);
+            m_uiGroups[groupName].RemoveUIForm(uiForm, data);
         }
     }
 }

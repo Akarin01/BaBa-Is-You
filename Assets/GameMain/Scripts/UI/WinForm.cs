@@ -34,18 +34,18 @@ namespace BabaIsYou
             Debug.Log("WinForm Init!");
         }
 
-        public override void OnOpen()
+        public override void OnOpen(object data)
         {
-            base.OnOpen();
+            base.OnOpen(data);
 
             Debug.Log("WinForm Open!");
         }
 
-        public override void OnClose()
+        public override void OnClose(object data)
         {
-            base.OnClose();
-
             Debug.Log("WinForm Close!");
+
+            base.OnClose(data);
         }
 
         public override void OnPause()

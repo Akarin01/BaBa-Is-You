@@ -6,7 +6,7 @@ namespace KitaFramework
     {
         private LinkedList<UIForm> m_uiForms = new();
 
-        public void AddUIForm(UIForm uiForm)
+        public void AddUIForm(UIForm uiForm, object data)
         {
             if (m_uiForms.Count != 0)
             {
@@ -15,10 +15,10 @@ namespace KitaFramework
                 topUIForm.OnPause();
             }
             m_uiForms.AddFirst(uiForm);
-            uiForm.OnOpen();
+            uiForm.OnOpen(data);
         }
 
-        public void RemoveUIForm(UIForm uiForm)
+        public void RemoveUIForm(UIForm uiForm, object data)
         {
             var node = m_uiForms.First;
             while (node != null)
@@ -27,7 +27,7 @@ namespace KitaFramework
                 if (form == uiForm)
                 {
                     // 找到对应的 UIForm 实例
-                    form.OnClose();
+                    form.OnClose(data);
 
                     if (node.Next != null)
                     {

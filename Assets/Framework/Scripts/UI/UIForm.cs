@@ -22,14 +22,14 @@ namespace KitaFramework
             m_canvasGroup = GetComponent<CanvasGroup>();
         }
 
-        public virtual void OnOpen()
+        public virtual void OnOpen(object data)
         {
             StopAllCoroutines();
             m_canvasGroup.alpha = 0;
             StartCoroutine(FadeToAlpha(1f, FADE_TIME));
         }
 
-        public virtual void OnClose()
+        public virtual void OnClose(object data)
         {
 
         }

@@ -17,16 +17,18 @@ namespace BabaIsYou
             Debug.Log("SettingForm Init!");
         }
 
-        public override void OnOpen()
+        public override void OnOpen(object data)
         {
-            base.OnOpen();
+            base.OnOpen(data);
 
             Debug.Log("SettingForm Open!");
         }
 
-        public override void OnClose()
+        public override void OnClose(object data)
         {
             Debug.Log("SettingForm Close!");
+
+            base.OnClose(data);
         }
 
         public override void OnPause()
