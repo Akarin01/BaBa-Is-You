@@ -129,10 +129,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2397557569248321746, guid: b26f78442b7c0924b97a6f6262498e45, type: 3}
-      propertyPath: m_startProcedureName
-      value: BabaIsYou.ProcedureLauncher
-      objectReference: {fileID: 0}
     - target: {fileID: 3301280296588431997, guid: b26f78442b7c0924b97a6f6262498e45, type: 3}
       propertyPath: m_Name
       value: Game Entry
