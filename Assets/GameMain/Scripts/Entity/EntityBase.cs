@@ -100,7 +100,7 @@ namespace BabaIsYou
             m_isMoving = true;
             while (Vector2.Distance(Position, m_targetPos) > 0.1f)
             {
-                Position = Vector2.MoveTowards(Position, m_targetPos, Constant.MOVE_SPEED * Time.fixedDeltaTime);
+                Position = Vector2.MoveTowards(Position, m_targetPos, Config.MOVE_SPEED * Time.fixedDeltaTime);
                 yield return new WaitForFixedUpdate();
             }
             // 到达目的地
