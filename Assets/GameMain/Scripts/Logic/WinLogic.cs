@@ -21,7 +21,7 @@ namespace BabaIsYou
             {
                 Debug.Log("Win");
 
-                GameEntry.EventManager.Fire(GameWinArgs.EventID, this, new GameWinArgs());
+                GameEntry.Event.Fire(GameWinArgs.EventID, this, new GameWinArgs());
             }
             return true;
         }

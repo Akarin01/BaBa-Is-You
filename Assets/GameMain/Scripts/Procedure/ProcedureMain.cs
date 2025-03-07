@@ -17,7 +17,7 @@ namespace BabaIsYou
 
             m_isGameWon = false;
 
-            GameEntry.EventManager.Subscribe(GameWinArgs.EventID, WinGame);
+            GameEntry.Event.Subscribe(GameWinArgs.EventID, WinGame);
         }
 
         protected internal override void OnUpdate(IFsm<ProcedureManager> procedureOwner, float deltaTime, float realDeltaTime)
@@ -32,7 +32,7 @@ namespace BabaIsYou
 
         protected internal override void OnExit(IFsm<ProcedureManager> procedureOwner, bool isShutdown)
         {
-            GameEntry.EventManager.Unsubscribe(GameWinArgs.EventID, WinGame);
+            GameEntry.Event.Unsubscribe(GameWinArgs.EventID, WinGame);
 
             base.OnExit(procedureOwner, isShutdown);
         }
