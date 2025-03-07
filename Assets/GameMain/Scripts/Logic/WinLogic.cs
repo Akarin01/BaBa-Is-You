@@ -20,7 +20,8 @@ namespace BabaIsYou
             if (initiator.Logic is YouLogic)
             {
                 Debug.Log("Win");
-                GameMode.WinGame();
+
+                GameEntry.EventManager.Fire(GameWinArgs.EventID, this, new GameWinArgs());
             }
             return true;
         }

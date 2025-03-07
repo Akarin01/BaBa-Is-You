@@ -6,7 +6,7 @@ namespace BabaIsYou
     {
         private bool m_isGameWon;
 
-        private void WinGame()
+        private void WinGame(object sender, BaseEventArgs e)
         {
             m_isGameWon = true;
         }
@@ -17,7 +17,7 @@ namespace BabaIsYou
 
             m_isGameWon = false;
 
-            GameMode.OnGameWin += WinGame;
+            GameEntry.EventManager.Subscribe(GameWinArgs.EventID, WinGame);
         }
 
         protected internal override void OnUpdate(IFsm<ProcedureManager> procedureOwner, float deltaTime, float realDeltaTime)
@@ -32,7 +32,7 @@ namespace BabaIsYou
 
         protected internal override void OnExit(IFsm<ProcedureManager> procedureOwner, bool isShutdown)
         {
-            GameMode.OnGameWin -= WinGame;
+            GameEntry.EventManager.Unsubscribe(GameWinArgs.EventID, WinGame);
 
             base.OnExit(procedureOwner, isShutdown);
         }
