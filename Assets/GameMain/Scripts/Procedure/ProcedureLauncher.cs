@@ -6,7 +6,7 @@ namespace BabaIsYou
 {
     public class ProcedureLauncher : ProcedureBase
     {
-        private const string m_dataTableFileName = "UIFormDataTable";
+        private const string m_dataTableFileName = "UIForm";
 
         protected internal override void OnEnter(IFsm<ProcedureManager> procedureOwner)
         {
