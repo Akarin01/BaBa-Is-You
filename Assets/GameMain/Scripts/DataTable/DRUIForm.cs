@@ -6,7 +6,7 @@ namespace BabaIsYou
     {
         private int m_id;
 
-        public override int ID => m_id;
+        public override int Id => m_id;
 
         public string UIName { get; private set; }
 

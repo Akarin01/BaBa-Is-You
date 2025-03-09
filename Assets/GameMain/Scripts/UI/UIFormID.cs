@@ -1,6 +1,6 @@
 ﻿namespace BabaIsYou
 {
-    public enum UIFormID
+    public enum UIFormId
     {
         None,
         Menu = 1,

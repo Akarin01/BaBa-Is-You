@@ -5,7 +5,7 @@ namespace BabaIsYou
 {
     public static class UIExtension
     {
-        public static void OpenUI(this UIManager uiManager, UIFormID uiFormId, object data = null)
+        public static void OpenUI(this UIManager uiManager, UIFormId uiFormId, object data = null)
         {
             uiManager.OpenUI((int)uiFormId, data);
         }

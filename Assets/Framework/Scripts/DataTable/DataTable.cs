@@ -52,11 +52,11 @@ namespace KitaFramework
                             continue;
                         }
 
-                        if (m_dataRows.ContainsKey(row.ID))
+                        if (m_dataRows.ContainsKey(row.Id))
                         {
-                            throw new Exception($"ID {row.ID} has been existed");
+                            throw new Exception($"ID {row.Id} has been existed");
                         }
-                        m_dataRows.Add(row.ID, row);
+                        m_dataRows.Add(row.Id, row);
                     }
                 }
             }

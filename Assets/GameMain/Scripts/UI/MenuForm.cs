@@ -23,7 +23,7 @@ namespace BabaIsYou
 
         public void OnSettingBtnClicked()
         {
-            GameEntry.UI.OpenUI(UIFormID.Setting);
+            GameEntry.UI.OpenUI(UIFormId.Setting);
         }
 
         public void OnQuitBtnClicked()

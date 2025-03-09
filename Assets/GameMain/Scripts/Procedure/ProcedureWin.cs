@@ -38,7 +38,7 @@ namespace BabaIsYou
 
             m_choice = Choice.None;
 
-            GameEntry.UI.OpenUI(UIFormID.Win, this);
+            GameEntry.UI.OpenUI(UIFormId.Win, this);
         }
 
         protected internal override void OnUpdate(IFsm<ProcedureManager> procedureOwner, float deltaTime, float realDeltaTime)
