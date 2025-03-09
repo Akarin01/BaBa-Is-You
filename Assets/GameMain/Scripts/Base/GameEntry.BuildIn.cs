@@ -8,12 +8,14 @@ namespace BabaIsYou
         public static UIManager UI { get; private set; }
         public static ObjectPoolManager ObjectPool { get; private set; }
         public static EventManager Event { get; private set; }
+        public static DataTableManager DataTable { get; private set; }
 
         private void InitBuildInManager()
         {
-            UI = KitaFramework.FrameworkEntry.GetManager<UIManager>();
-            ObjectPool = KitaFramework.FrameworkEntry.GetManager<ObjectPoolManager>();
-            Event = KitaFramework.FrameworkEntry.GetManager<EventManager>();
+            UI = FrameworkEntry.GetManager<UIManager>();
+            ObjectPool = FrameworkEntry.GetManager<ObjectPoolManager>();
+            Event = FrameworkEntry.GetManager<EventManager>();
+            DataTable = FrameworkEntry.GetManager<DataTableManager>();
         }
     }
 }

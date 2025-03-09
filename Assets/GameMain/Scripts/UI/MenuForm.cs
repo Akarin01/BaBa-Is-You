@@ -10,12 +10,7 @@ namespace BabaIsYou
 {
     public class MenuForm : UIForm
     {
-        [SerializeField] private string m_groupName = Config.DEFAULT_GROUP;
-
-        public override string GroupName => m_groupName;
-
         private ProcedureMenu m_procedureMenu;
-
 
         public void OnStartBtnClicked()
         {
@@ -28,7 +23,7 @@ namespace BabaIsYou
 
         public void OnSettingBtnClicked()
         {
-            GameEntry.UI.OpenUI<SettingForm>();
+            GameEntry.UI.OpenUI(UIFormID.Setting);
         }
 
         public void OnQuitBtnClicked()
@@ -43,9 +38,9 @@ namespace BabaIsYou
 #endif
         }
 
-        public override void OnInit()
+        public override void OnInit(string groupName)
         {
-            base.OnInit();
+            base.OnInit(groupName);
 
             Debug.Log("MenuForm Init!");
         }

@@ -5,10 +5,6 @@ namespace BabaIsYou
 {
     public class WinForm : UIForm
     {
-        [SerializeField] private string m_groupName = Config.DEFAULT_GROUP;
-
-        public override string GroupName => m_groupName;
-
         private ProcedureWin m_procedureWin;
 
         public void OnNextBtnClicked()
@@ -38,9 +34,9 @@ namespace BabaIsYou
             Debug.Log("Menu");
         }
 
-        public override void OnInit()
+        public override void OnInit(string groupName)
         {
-            base.OnInit();
+            base.OnInit(groupName);
 
             Debug.Log("WinForm Init!");
         }

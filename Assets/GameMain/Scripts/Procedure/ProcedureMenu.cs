@@ -18,7 +18,7 @@ namespace BabaIsYou
 
             m_startGame = false;
 
-            GameEntry.UI.OpenUI<MenuForm>(this);
+            GameEntry.UI.OpenUI(UIFormID.Menu, this);
         }
 
         protected internal override void OnUpdate(IFsm<ProcedureManager> procedureOwner, float deltaTime, float realDeltaTime)

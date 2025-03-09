@@ -10,15 +10,17 @@ namespace KitaFramework
     [RequireComponent(typeof(CanvasGroup))]
     public abstract class UIForm : MonoBehaviour
     {
-        public abstract string GroupName { get; }
+        public string GroupName { get; protected set; }
 
         private const float FADE_TIME = 0.3f;
 
         private CanvasGroup m_canvasGroup;
 
-        public virtual void OnInit()
+        public virtual void OnInit(string groupName)
         {
             m_canvasGroup = GetComponent<CanvasGroup>();
+
+            GroupName = groupName;
         }
 
         public virtual void OnOpen(object data)

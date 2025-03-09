@@ -1,0 +1,4 @@
+#,id,UIName,Path,GroupName
+,1,Menu Form,UIForms/MenuForm,Default
+,2,Setting Form,UIForms/SettingForm,Default
+,3,Win Form,UIForms/WinForm,Default

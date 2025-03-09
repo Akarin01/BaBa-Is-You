@@ -5,18 +5,14 @@ namespace BabaIsYou
 {
     public class SettingForm : UIForm
     {
-        [SerializeField] private string m_groupName = Config.DEFAULT_GROUP;
-
-        public override string GroupName => m_groupName;
-
         public void OnQuitBtnClicked()
         {
             Close(false);
         }
 
-        public override void OnInit()
+        public override void OnInit(string groupName)
         {
-            base.OnInit();
+            base.OnInit(groupName);
 
             Debug.Log("SettingForm Init!");
         }
