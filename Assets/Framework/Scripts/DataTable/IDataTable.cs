@@ -6,6 +6,6 @@
 
         public T GetDataRow(int id);
 
-        public void ReadData(string file);
+        public void ReadData(string fileName);
     }
 }
