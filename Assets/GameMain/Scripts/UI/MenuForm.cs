@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using KitaFramework;
 
 
@@ -11,7 +10,12 @@ namespace BabaIsYou
 {
     public class MenuForm : UIForm
     {
+        [SerializeField] private string m_groupName = Config.DEFAULT_GROUP;
+
+        public override string GroupName => m_groupName;
+
         private ProcedureMenu m_procedureMenu;
+
 
         public void OnStartBtnClicked()
         {

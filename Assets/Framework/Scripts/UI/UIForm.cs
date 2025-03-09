@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using UnityEngine;
-using BabaIsYou;
 
 namespace KitaFramework
 {
@@ -11,7 +10,7 @@ namespace KitaFramework
     [RequireComponent(typeof(CanvasGroup))]
     public abstract class UIForm : MonoBehaviour
     {
-        [field: SerializeField] public string GroupName { get; set; } = Config.DEFAULT_GROUP;
+        public abstract string GroupName { get; }
 
         private const float FADE_TIME = 0.3f;
 

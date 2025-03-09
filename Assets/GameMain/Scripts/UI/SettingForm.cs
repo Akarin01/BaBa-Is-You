@@ -5,6 +5,10 @@ namespace BabaIsYou
 {
     public class SettingForm : UIForm
     {
+        [SerializeField] private string m_groupName = Config.DEFAULT_GROUP;
+
+        public override string GroupName => m_groupName;
+
         public void OnQuitBtnClicked()
         {
             Close(false);

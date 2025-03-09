@@ -1,11 +1,14 @@
 using KitaFramework;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace BabaIsYou
 {
     public class WinForm : UIForm
     {
+        [SerializeField] private string m_groupName = Config.DEFAULT_GROUP;
+
+        public override string GroupName => m_groupName;
+
         private ProcedureWin m_procedureWin;
 
         public void OnNextBtnClicked()
