@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using BabaIsYou;
 
 namespace KitaFramework
 {
@@ -23,21 +22,18 @@ namespace KitaFramework
             m_objectPool = FrameworkEntry.GetManager<ObjectPoolManager>()?.CreateObjectPool<UIFormObject>();
         }
 
-        public void OpenUI(UIFormID id, object data = null)
+        public void OpenUI(string uiPath, string groupName, object data)
         {
-            IDataTable<DRUIForm> dtUIForm = FrameworkEntry.GetManager<DataTableManager>()?.GetDataTable<DRUIForm>(null);
-            DRUIForm drUIForm = dtUIForm.GetDataRow((int)id);
-
             // 创建 UIForm 实例
-            string name = drUIForm.UIName;
+            string name = uiPath;
             UIFormObject uiFormObject = m_objectPool.Spawn(name);
             UIForm uiForm = null;
             if (uiFormObject == null)
             {
                 // 注册新的对象
-                uiForm = Resources.Load<UIForm>(drUIForm.Path);
+                uiForm = Resources.Load<UIForm>(uiPath);
                 uiForm = Instantiate(uiForm, m_uiFormInstancesRoot);
-                uiForm.OnInit(drUIForm.GroupName);
+                uiForm.OnInit(groupName);
                 uiFormObject = new UIFormObject();
                 uiFormObject.Init(uiForm, name);
                 m_objectPool.Register(uiFormObject, true);

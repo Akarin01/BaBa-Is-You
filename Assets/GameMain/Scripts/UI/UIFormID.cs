@@ -1,4 +1,4 @@
-﻿namespace KitaFramework
+﻿namespace BabaIsYou
 {
     public enum UIFormID
     {

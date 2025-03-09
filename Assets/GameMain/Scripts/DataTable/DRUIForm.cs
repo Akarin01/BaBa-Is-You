@@ -1,4 +1,6 @@
-﻿namespace KitaFramework
+﻿using KitaFramework;
+
+namespace BabaIsYou
 {
     public class DRUIForm : DataRowBase
     {
