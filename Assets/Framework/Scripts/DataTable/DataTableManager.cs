@@ -15,7 +15,7 @@ namespace KitaFramework
             m_dataTables = new();
         }
 
-        public IDataTable<T> CreateDataTable<T>(string name) where T : DataRowBase, new()
+        public IDataTable<T> CreateDataTable<T>(string name = null) where T : DataRowBase, new()
         {
             TypeNamePair key = new(typeof(T), name);
             if (m_dataTables.ContainsKey(key))
@@ -27,23 +27,20 @@ namespace KitaFramework
             return (IDataTable<T>)dataTable;
         }
 
-        public IDataTable<T> GetDataTable<T>(string name) where T : DataRowBase
+        public IDataTable<T> GetDataTable<T>(string name = null) where T : DataRowBase
         {
             TypeNamePair key = new(typeof(T), name);
-            if (!m_dataTables.ContainsKey(key))
-            {
-                throw new ArgumentException("Data table is not exsited");
-            }
-            return (IDataTable<T>)m_dataTables[key];
+            m_dataTables.TryGetValue(key, out DataTableBase dataTable);
+            return (IDataTable<T>)dataTable;
         }
 
-        public bool HasDataTable<T>(string name) where T : DataRowBase
+        public bool HasDataTable<T>(string name = null) where T : DataRowBase
         {
             TypeNamePair key = new(typeof(T), name);
             return m_dataTables.ContainsKey(key);
         }
 
-        public bool RemoveDataTable<T>(string name) where T :DataRowBase
+        public bool RemoveDataTable<T>(string name = null) where T :DataRowBase
         {
             TypeNamePair key = new(typeof(T), name);
             return m_dataTables.Remove(key);

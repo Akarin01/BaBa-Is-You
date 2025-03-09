@@ -21,11 +21,8 @@ namespace KitaFramework
 
         public T GetDataRow(int id)
         {
-            if (!m_dataRows.ContainsKey(id))
-            {
-                throw new ArgumentException($"{nameof(id)} is invalid");
-            }
-            return m_dataRows[id];
+            m_dataRows.TryGetValue(id, out T dataRow);
+            return dataRow;
         }
 
         public void ReadData(string fileName)
