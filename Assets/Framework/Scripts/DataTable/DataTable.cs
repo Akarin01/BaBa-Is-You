@@ -8,14 +8,14 @@ namespace KitaFramework
 {
     public class DataTable<T> : DataTableBase, IDataTable<T> where T : DataRowBase, new()
     {
-        private string m_tableName;
+        private string m_dataTableName;
         private Dictionary<int, T> m_dataRows;
 
-        public string Name => m_tableName;
+        public string Name => m_dataTableName;
 
         public DataTable(string tableName)
         {
-            m_tableName = tableName;
+            m_dataTableName = tableName;
             m_dataRows = new();
         }
 
