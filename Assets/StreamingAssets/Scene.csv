@@ -1,0 +1,6 @@
+#,Id,SceneName,SceneAssetName
+,0,Splash,Assets/Scenes/Splash.unity
+,1,Game Launcher,Assets/Scenes/Game Launcher.unity
+,2,Menu,Assets/Scenes/Menu.unity
+,3,Level_1,Assets/Scenes/Level_1.unity
+,4,Level_2,Assets/Scenes/Level_2.unity

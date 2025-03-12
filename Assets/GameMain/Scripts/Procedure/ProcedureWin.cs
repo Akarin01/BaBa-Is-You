@@ -1,6 +1,4 @@
 ﻿using KitaFramework;
-using UnityEngine.SceneManagement;
-using System;
 
 namespace BabaIsYou
 {
@@ -51,14 +49,11 @@ namespace BabaIsYou
                 case Choice.None:
                     return;
                 case Choice.Next:
-                    nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
-                    if (nextSceneIndex >= SceneManager.sceneCountInBuildSettings)
-                    {
-                        nextSceneIndex = Config.MENU_SCENE_INDEX;
-                    }
+                    nextSceneIndex = SceneInfo.CurrentSceneId + 1;
+                    nextSceneIndex = nextSceneIndex > SceneInfo.MAX_SCENE_ID ? Config.MENU_SCENE_INDEX : nextSceneIndex;
                     break;
                 case Choice.Restart:
-                    nextSceneIndex = SceneManager.GetActiveScene().buildIndex;
+                    nextSceneIndex = SceneInfo.CurrentSceneId;
                     break;
                 case Choice.GotoMenu:
                     nextSceneIndex = Config.MENU_SCENE_INDEX;

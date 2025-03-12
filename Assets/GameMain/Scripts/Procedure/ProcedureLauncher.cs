@@ -1,12 +1,11 @@
 ﻿using KitaFramework;
-using System;
-using UnityEngine;
 
 namespace BabaIsYou
 {
     public class ProcedureLauncher : ProcedureBase
     {
-        private const string m_dataTableFileName = "UIForm";
+        private const string UIFORM_DATA_TABLE_NAME = "UIForm";
+        private const string SCENE_DATA_TABLE_NAME = "Scene";
 
         protected internal override void OnEnter(IFsm<ProcedureManager> procedureOwner)
         {
@@ -21,7 +20,10 @@ namespace BabaIsYou
         private void LoadDataTable()
         {
             IDataTable<DRUIForm> dtUIForm = GameEntry.DataTable.CreateDataTable<DRUIForm>(null);
-            dtUIForm.ReadData(m_dataTableFileName);
+            dtUIForm.ReadData(UIFORM_DATA_TABLE_NAME);
+
+            IDataTable<DRScene> dtScene = GameEntry.DataTable.CreateDataTable<DRScene>(null);
+            dtScene.ReadData(SCENE_DATA_TABLE_NAME);
         }
     }
 }

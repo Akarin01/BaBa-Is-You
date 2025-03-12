@@ -1,5 +1,4 @@
 ﻿using KitaFramework;
-using UnityEngine.SceneManagement;
 
 namespace BabaIsYou
 {

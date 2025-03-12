@@ -1,0 +1,134 @@
+﻿using System.Collections.Generic;
+using UnityEngine;
+using System;
+
+namespace KitaFramework
+{
+    public class SceneManager : FrameworkManager
+    {
+        private List<string> m_loadedSceneAssetNames;
+        private List<string> m_loadingSceneAssetNames;
+        private List<string> m_unloadingSceneAssetNames;
+        private LoadSceneCallbacks m_loadSceneCallbacks;
+        private LoadSceneCallbacks m_unloadSceneCallbacks;
+        private ResourceManager m_resourceManager;
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            m_loadedSceneAssetNames = new();
+            m_loadingSceneAssetNames = new();
+            m_unloadingSceneAssetNames = new();
+            m_loadSceneCallbacks = new(LoadSceneSuccessCallback, LoadSceneFailureCallback);
+            m_unloadSceneCallbacks = new(UnloadSceneSuccessCallback, UnloadSceneFailureCallback);
+        }
+
+        private void Start()
+        {
+            m_resourceManager = FrameworkEntry.GetManager<ResourceManager>();
+        }
+
+        public void LoadScene(string sceneAssetName, bool allowReload = false, object userData = null)
+        {
+            if (IsSceneLoading(sceneAssetName))
+            {
+                throw new ArgumentException($"Scene {sceneAssetName} is loading");
+            }
+            if (IsSceneUnloading(sceneAssetName))
+            {
+                throw new ArgumentException($"Scene {sceneAssetName} is unloading");
+            }
+            if (IsSceneLoaded(sceneAssetName))
+            {
+                if (allowReload)
+                {
+                    // 重新加载场景
+                }
+                else
+                {
+                    throw new ArgumentException($"Scene {sceneAssetName} has been loaded");
+                }
+            }
+
+            m_loadingSceneAssetNames.Add(sceneAssetName);
+            m_resourceManager.LoadScene(sceneAssetName, m_loadSceneCallbacks, userData);
+        }
+
+        public void UnloadScene(string sceneAssetName, object userData = null)
+        {
+            if (IsSceneLoading(sceneAssetName))
+            {
+                throw new ArgumentException($"Scene {sceneAssetName} is loading");
+            }
+            if (IsSceneUnloading(sceneAssetName))
+            {
+                throw new ArgumentException($"Scene {sceneAssetName} is unloading");
+            }
+
+            m_loadedSceneAssetNames.Remove(sceneAssetName);
+            m_unloadingSceneAssetNames.Add(sceneAssetName);
+            m_resourceManager.UnloadScene(sceneAssetName, m_unloadSceneCallbacks, userData);
+        }
+
+        public bool IsSceneLoaded(string sceneAssetName)
+        {
+            return m_loadedSceneAssetNames.Contains(sceneAssetName);
+        }
+
+        public string[] GetLoadedSceneAssetNames()
+        {
+            return m_loadedSceneAssetNames.ToArray();
+        }
+
+        public bool IsSceneLoading(string sceneAssetName)
+        {
+            return m_loadingSceneAssetNames.Contains(sceneAssetName);
+        }
+
+        public string[] GetLoadingSceneAssetNames()
+        {
+            return m_loadingSceneAssetNames.ToArray();
+        }
+
+        public bool IsSceneUnloading(string sceneAssetName)
+        {
+            return m_unloadingSceneAssetNames.Contains(sceneAssetName);
+        }
+
+        public string[] GetUnloadingSceneAssetNames()
+        {
+            return m_unloadingSceneAssetNames.ToArray();
+        }
+
+        public override void Shutdown()
+        {
+            m_loadedSceneAssetNames.Clear();
+            m_loadingSceneAssetNames.Clear();
+            m_unloadingSceneAssetNames.Clear();
+        }
+
+        private void LoadSceneSuccessCallback(string sceneAssetName, object userData)
+        {
+            m_loadingSceneAssetNames.Remove(sceneAssetName);
+            m_loadedSceneAssetNames.Add(sceneAssetName);
+        }
+
+        private void LoadSceneFailureCallback(string sceneAssetName, string errorMsg, object userData)
+        {
+            m_loadingSceneAssetNames.Remove(sceneAssetName);
+            Debug.LogError($"Load scene {sceneAssetName} failed");
+        }
+
+        private void UnloadSceneSuccessCallback(string sceneAssetName, object userData)
+        {
+            m_unloadingSceneAssetNames.Remove(sceneAssetName);
+        }
+
+        private void UnloadSceneFailureCallback(string sceneAssetName, string errorMsg, object userData)
+        {
+            m_unloadingSceneAssetNames.Remove(sceneAssetName);
+            Debug.LogError($"Unload scene {sceneAssetName} failed");
+        }
+    }
+}
