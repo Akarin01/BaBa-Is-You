@@ -101,8 +101,7 @@ namespace KitaFramework
 
             uiForm = Instantiate(uiForm, m_uiFormInstancesRoot);
             uiForm.OnInit(data.GroupName);
-            UIFormObject uiFormObject = new UIFormObject();
-            uiFormObject.Init(uiForm, assetName);
+            UIFormObject uiFormObject = new UIFormObject(uiForm, assetName);
             m_objectPool.Register(uiFormObject, true);
 
             AddUIForm(uiForm.GroupName, uiForm, data.Data);
