@@ -6,12 +6,15 @@ namespace KitaFramework
 {
     public class SceneManager : FrameworkManager
     {
+        public event EventHandler<UnloadSceneSuccessEventArgs> OnUnloadSceneSuccess;
+
         private List<string> m_loadedSceneAssetNames;
         private List<string> m_loadingSceneAssetNames;
         private List<string> m_unloadingSceneAssetNames;
         private LoadSceneCallbacks m_loadSceneCallbacks;
         private LoadSceneCallbacks m_unloadSceneCallbacks;
         private ResourceManager m_resourceManager;
+        private EventManager m_eventManager;
 
         protected override void Awake()
         {
@@ -27,6 +30,7 @@ namespace KitaFramework
         private void Start()
         {
             m_resourceManager = FrameworkEntry.GetManager<ResourceManager>();
+            m_eventManager = FrameworkEntry.GetManager<EventManager>();
         }
 
         public void LoadScene(string sceneAssetName, bool allowReload = false, object userData = null)
@@ -100,6 +104,8 @@ namespace KitaFramework
             m_loadedSceneAssetNames.Clear();
             m_loadingSceneAssetNames.Clear();
             m_unloadingSceneAssetNames.Clear();
+
+            OnUnloadSceneSuccess = null;
         }
 
         private void LoadSceneSuccessCallback(string sceneAssetName, object userData)
@@ -117,6 +123,8 @@ namespace KitaFramework
         private void UnloadSceneSuccessCallback(string sceneAssetName, object userData)
         {
             m_unloadingSceneAssetNames.Remove(sceneAssetName);
+
+            OnUnloadSceneSuccess?.Invoke(this, new UnloadSceneSuccessEventArgs(sceneAssetName, userData));
         }
 
         private void UnloadSceneFailureCallback(string sceneAssetName, string errorMsg, object userData)

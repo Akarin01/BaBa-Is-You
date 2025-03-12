@@ -8,18 +8,12 @@ namespace KitaFramework
     public class ResourceManager : FrameworkManager
     {
         private Dictionary<string, AsyncOperationHandle<UnityEngine.ResourceManagement.ResourceProviders.SceneInstance>> m_sceneAssetNameHandlerMaps;
-        private EventManager m_eventManager;
 
         protected override void Awake()
         {
             base.Awake();
 
             m_sceneAssetNameHandlerMaps = new();
-        }
-
-        private void Start()
-        {
-            m_eventManager = FrameworkEntry.GetManager<EventManager>();
         }
 
         public void LoadScene(string sceneAssetName, LoadSceneCallbacks loadSceneCallbacks, object userData)
@@ -67,8 +61,6 @@ namespace KitaFramework
                     unloadSceneCallbacks?.LoadSceneSuccessCallback?.Invoke(sceneAssetName, userData);
 
                     m_sceneAssetNameHandlerMaps.Remove(sceneAssetName);
-
-                    m_eventManager.Fire(UnloadSceneCompleteArgs.EventId, this, new UnloadSceneCompleteArgs(sceneAssetName));
                 };
         }
 
