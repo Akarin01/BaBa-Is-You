@@ -79,8 +79,17 @@ namespace KitaFramework
                 };
         }
 
+        public void Release<TObject>(TObject asset)
+        {
+            Addressables.Release(asset);
+        }
+
         public override void Shutdown()
         {
+            foreach (var handler in m_sceneAssetNameHandlerMaps.Values)
+            {
+                Addressables.UnloadSceneAsync(handler, UnityEngine.SceneManagement.UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
+            }
             m_sceneAssetNameHandlerMaps.Clear();
         }
     }
