@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.IO;
 
 namespace KitaFramework
 {
@@ -9,6 +10,7 @@ namespace KitaFramework
 
         private Dictionary<string, UIGroup> m_uiGroups;
         private IObjectPool<UIFormObject> m_objectPool;
+        private ResourceManager m_resourceManager;
 
         protected override void Awake()
         {
@@ -20,6 +22,7 @@ namespace KitaFramework
         private void Start()
         {
             m_objectPool = FrameworkEntry.GetManager<ObjectPoolManager>()?.CreateObjectPool<UIFormObject>();
+            m_resourceManager = FrameworkEntry.GetManager<ResourceManager>();
         }
 
         public void OpenUI(string uiPath, string groupName, object data)
@@ -27,25 +30,21 @@ namespace KitaFramework
             // 创建 UIForm 实例
             string name = uiPath;
             UIFormObject uiFormObject = m_objectPool.Spawn(name);
-            UIForm uiForm = null;
             if (uiFormObject == null)
             {
                 // 注册新的对象
-                uiForm = Resources.Load<UIForm>(uiPath);
-                uiForm = Instantiate(uiForm, m_uiFormInstancesRoot);
-                uiForm.OnInit(groupName);
-                uiFormObject = new UIFormObject();
-                uiFormObject.Init(uiForm, name);
-                m_objectPool.Register(uiFormObject, true);
+                m_resourceManager.LoadAsset<UIForm>(name, 
+                    new LoadAssetCallbacks(LoadUIFormSuccessCallback, LoadUIFormFailureCallback), 
+                    new LoadUIFormData(groupName, data));
             }
             else
             {
                 // 取出对象
-                uiForm = (UIForm)uiFormObject.Target;
-            }
+                UIForm uiForm = (UIForm)uiFormObject.Target;
 
-            // 添加到对应的 UIGroup
-            AddUIForm(uiForm.GroupName, uiForm, data);
+                // 添加到对应的 UIGroup
+                AddUIForm(uiForm.GroupName, uiForm, data);
+            }
         }
 
         public void CloseUI(UIForm uiForm, object data = null)
@@ -56,6 +55,7 @@ namespace KitaFramework
             // 销毁 UIForm 实例
             m_objectPool.Unspawn(uiForm);
         }
+
         public override void Shutdown()
         {
             foreach (var uiGroup in m_uiGroups)
@@ -86,6 +86,25 @@ namespace KitaFramework
             }
 
             m_uiGroups[groupName].RemoveUIForm(uiForm, data);
+        }
+
+        private void LoadUIFormSuccessCallback(string assetName, object asset, object userData)
+        {
+            UIForm uiForm = asset as UIForm;
+            LoadUIFormData data = userData as LoadUIFormData;
+
+            uiForm = Instantiate(uiForm, m_uiFormInstancesRoot);
+            uiForm.OnInit(data.GroupName);
+            UIFormObject uiFormObject = new UIFormObject();
+            uiFormObject.Init(uiForm, assetName);
+            m_objectPool.Register(uiFormObject, true);
+
+            AddUIForm(uiForm.GroupName, uiForm, data.Data);
+        }
+
+        private void LoadUIFormFailureCallback(string assetName, object asset, object userData)
+        {
+            Debug.Log($"UIForm {assetName} fail to load");
         }
     }
 }

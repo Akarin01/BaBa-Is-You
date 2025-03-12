@@ -68,7 +68,22 @@ namespace KitaFramework
 
                     m_sceneAssetNameHandlerMaps.Remove(sceneAssetName);
 
-                    m_eventManager.Fire(UnloadCompleteArgs.EventId, this, new UnloadCompleteArgs(sceneAssetName));
+                    m_eventManager.Fire(UnloadSceneCompleteArgs.EventId, this, new UnloadSceneCompleteArgs(sceneAssetName));
+                };
+        }
+
+        public void LoadAsset<TObject>(string assetName, LoadAssetCallbacks loadAssetCallbacks, object userData)
+        {
+            Addressables.LoadAssetAsync<TObject>(assetName)
+                .Completed += (handler) =>
+                {
+                    if (handler.Status != AsyncOperationStatus.Succeeded)
+                    {
+                        loadAssetCallbacks?.LoadAssetFailureCallback?.Invoke(assetName, null, userData);
+                        return;
+                    }
+
+                    loadAssetCallbacks?.LoadAssetSuccessCallback?.Invoke(assetName, handler.Result, userData);
                 };
         }
 
