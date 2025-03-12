@@ -11,12 +11,14 @@ namespace KitaFramework
         private Dictionary<string, UIGroup> m_uiGroups;
         private IObjectPool<UIFormObject> m_objectPool;
         private ResourceManager m_resourceManager;
+        private HashSet<string> m_loadingUIForms;
 
         protected override void Awake()
         {
             base.Awake();
 
             m_uiGroups = new();
+            m_loadingUIForms = new();
         }
 
         private void Start()
@@ -30,9 +32,10 @@ namespace KitaFramework
             // 创建 UIForm 实例
             string name = uiPath;
             UIFormObject uiFormObject = m_objectPool.Spawn(name);
-            if (uiFormObject == null)
+            if (uiFormObject == null && !m_loadingUIForms.Contains(uiPath))
             {
-                // 注册新的对象
+                // 加载新的对象
+                m_loadingUIForms.Add(uiPath);
                 m_resourceManager.LoadAsset<UIForm>(name, 
                     new LoadAssetCallbacks(LoadUIFormSuccessCallback, LoadUIFormFailureCallback), 
                     new LoadUIFormData(groupName, data));
@@ -41,6 +44,7 @@ namespace KitaFramework
             {
                 // 取出对象
                 UIForm uiForm = (UIForm)uiFormObject.Target;
+                uiForm.OnInit(groupName);
 
                 // 添加到对应的 UIGroup
                 AddUIForm(uiForm.GroupName, uiForm, data);
@@ -90,6 +94,8 @@ namespace KitaFramework
 
         private void LoadUIFormSuccessCallback(string assetName, object asset, object userData)
         {
+            m_loadingUIForms.Remove(assetName);
+
             UIForm uiForm = asset as UIForm;
             LoadUIFormData data = userData as LoadUIFormData;
 
@@ -104,6 +110,8 @@ namespace KitaFramework
 
         private void LoadUIFormFailureCallback(string assetName, object asset, object userData)
         {
+            m_loadingUIForms.Remove(assetName);
+
             Debug.Log($"UIForm {assetName} fail to load");
         }
     }
