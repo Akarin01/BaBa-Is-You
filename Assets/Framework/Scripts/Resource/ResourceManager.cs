@@ -79,11 +79,6 @@ namespace KitaFramework
                 };
         }
 
-        public void Release<TObject>(TObject asset)
-        {
-            Addressables.Release(asset);
-        }
-
         public override void Shutdown()
         {
             foreach (var handler in m_sceneAssetNameHandlerMaps.Values)
