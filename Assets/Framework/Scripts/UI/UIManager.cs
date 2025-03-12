@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.IO;
 
 namespace KitaFramework
 {
@@ -11,12 +10,14 @@ namespace KitaFramework
         private Dictionary<string, UIGroup> m_uiGroups;
         private IObjectPool<UIFormObject> m_objectPool;
         private ResourceManager m_resourceManager;
+        private HashSet<string> m_loadedUIFormAssetNames;
 
         protected override void Awake()
         {
             base.Awake();
 
             m_uiGroups = new();
+            m_loadedUIFormAssetNames = new();
         }
 
         private void Start()
@@ -35,6 +36,7 @@ namespace KitaFramework
                 m_resourceManager.LoadAsset<UIForm>(uiAssetName, 
                     new LoadAssetCallbacks(LoadUIFormSuccessCallback, LoadUIFormFailureCallback), 
                     new LoadUIFormData(groupName, data));
+                m_loadedUIFormAssetNames.Add(uiAssetName);
             }
             else
             {
@@ -62,10 +64,16 @@ namespace KitaFramework
             {
                 uiGroup.Value.Release();
             }
-            FrameworkEntry.GetManager<ObjectPoolManager>()?.DestroyObjectPool<UIFormObject>();
-
             m_uiGroups.Clear();
+
+            foreach (var assetNames in m_loadedUIFormAssetNames)
+            {
+                m_resourceManager.UnloadAsset(assetNames, null, null);
+            }
+
+            FrameworkEntry.GetManager<ObjectPoolManager>()?.DestroyObjectPool<UIFormObject>();
             m_objectPool = null;
+            m_resourceManager = null;
         }
 
         private void AddUIForm(string groupName, UIForm uiForm, object data)
