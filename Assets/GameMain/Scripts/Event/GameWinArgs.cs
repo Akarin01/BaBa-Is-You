@@ -4,9 +4,9 @@ namespace BabaIsYou
 {
     public class GameWinArgs : BaseEventArgs
     {
-        public override int ID => EventID;
+        public override int Id => EventID;
 
-        public static int EventID = typeof(GameWinArgs).GetHashCode();
+        public static int EventID { get; private set; } = typeof(GameWinArgs).GetHashCode();
 
         public GameWinArgs() { }
     }
