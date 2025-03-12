@@ -1,9 +1,14 @@
 ﻿using UnityEngine;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace KitaFramework
 {
     public class UIFormObject : ObjectBase
     {
+        public UIFormObject(UIForm target, string name) : base(target, name)
+        {
+        }
+
         public override void OnSpawn()
         {
             base.OnSpawn();
