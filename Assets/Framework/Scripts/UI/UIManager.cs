@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 namespace KitaFramework
 {
@@ -98,8 +99,17 @@ namespace KitaFramework
 
         private void LoadUIFormSuccessCallback(string assetName, object asset, object userData)
         {
-            UIForm uiForm = asset as UIForm;
-            LoadUIFormData data = userData as LoadUIFormData;
+            if (asset is not UIForm uiForm)
+            {
+                m_resourceManager.UnloadAsset(assetName, null, null);
+                Debug.LogError($"{nameof(asset)} is not {typeof(UIForm)}");
+                return;
+            }
+            if (userData is not LoadUIFormData data)
+            {
+                Debug.LogError($"{nameof(userData)} is not {typeof(LoadUIFormData)}");
+                return;
+            }
 
             uiForm = Instantiate(uiForm, m_uiFormInstancesRoot);
             uiForm.OnInit(data.GroupName);
