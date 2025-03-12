@@ -9,11 +9,16 @@ namespace KitaFramework
     {
         private Dictionary<string, AsyncOperationHandle<UnityEngine.ResourceManagement.ResourceProviders.SceneInstance>> m_sceneAssetNameHandlerMaps;
 
+        private Dictionary<string, AsyncOperationHandle> m_loadedAssetHandlers;
+        private Dictionary<string, AsyncOperationHandle> m_loadingAssetHandlers;
+
         protected override void Awake()
         {
             base.Awake();
 
             m_sceneAssetNameHandlerMaps = new();
+            m_loadedAssetHandlers = new();
+            m_loadingAssetHandlers = new();
         }
 
         public void LoadScene(string sceneAssetName, LoadSceneCallbacks loadSceneCallbacks, object userData)
@@ -66,17 +71,81 @@ namespace KitaFramework
 
         public void LoadAsset<TObject>(string assetName, LoadAssetCallbacks loadAssetCallbacks, object userData)
         {
-            Addressables.LoadAssetAsync<TObject>(assetName)
-                .Completed += (handler) =>
+            if (m_loadedAssetHandlers.TryGetValue(assetName, out var handler))
+            {
+                // 如果该 asset 已经被加载，直接调用回调方法
+                if (handler.Result is TObject)
                 {
+                    loadAssetCallbacks.LoadAssetSuccessCallback?.Invoke(assetName, m_loadedAssetHandlers[assetName].Result, userData);
+                }
+                else
+                {
+                    loadAssetCallbacks.LoadAssetFailureCallback?.Invoke(assetName, $"Asset {assetName} is not {typeof(TObject)}", userData);
+                }
+                return;
+            }
+            if (m_loadingAssetHandlers.TryGetValue(assetName, out handler))
+            {
+                // 如果该 asset 正在被加载，添加回调方法
+                if (handler.IsDone)
+                {
+                    // 已经加载完成，触发回调
+                    loadAssetCallbacks.LoadAssetSuccessCallback?.Invoke(assetName, handler.Result, userData);
+                }
+                else
+                {
+                    // 还没加载完成，添加回调
+                    handler.Completed +=
+                    handler =>
+                    {
+                        if (handler.Status != AsyncOperationStatus.Succeeded)
+                        {
+                            loadAssetCallbacks.LoadAssetFailureCallback?.Invoke(assetName, $"Fail to load asset {assetName}", userData);
+                            return;
+                        }
+                        loadAssetCallbacks.LoadAssetSuccessCallback?.Invoke(assetName, handler.Result, userData);
+                    };
+                }
+                return;
+            }
+            // 该 asset 未被加载，异步加载
+            handler = Addressables.LoadAssetAsync<TObject>(assetName);
+            m_loadingAssetHandlers.Add(assetName, handler);
+            handler.Completed +=
+                handler =>
+                {
+                    m_loadingAssetHandlers.Remove(assetName);
+
                     if (handler.Status != AsyncOperationStatus.Succeeded)
                     {
-                        loadAssetCallbacks?.LoadAssetFailureCallback?.Invoke(assetName, null, userData);
+                        loadAssetCallbacks.LoadAssetFailureCallback?.Invoke(assetName, $"Fail to load asset {assetName}", userData);
                         return;
                     }
-
-                    loadAssetCallbacks?.LoadAssetSuccessCallback?.Invoke(assetName, handler.Result, userData);
+                    loadAssetCallbacks.LoadAssetSuccessCallback?.Invoke(assetName, handler.Result, userData);
+                    m_loadedAssetHandlers.Add(assetName, handler);
                 };
+        }
+
+        public void UnloadAsset(string assetName, UnloadAssetCallbacks unloadAssetCallbacks, object userData)
+        {
+            if (m_loadedAssetHandlers.TryGetValue(assetName, out var handler))
+            {
+                // 如果该 asset 已经被加载，卸载
+                Addressables.Release(handler);
+                m_loadedAssetHandlers.Remove(assetName);
+                unloadAssetCallbacks.UnloadAssetSuccessCallback(assetName, userData);
+                return;
+            }
+            if (m_loadingAssetHandlers.TryGetValue(assetName, out handler))
+            {
+                // 如果该 asset 正在被加载，卸载
+                Addressables.Release(handler);
+                m_loadingAssetHandlers.Remove(assetName);
+                unloadAssetCallbacks.UnloadAssetSuccessCallback(assetName, userData);
+                return;
+            }
+            // 未加载的 asset
+            unloadAssetCallbacks.UnloadAssetFailureCallback(assetName, $"Asset {assetName} has not been loaded", userData);
         }
 
         public override void Shutdown()
@@ -85,7 +154,19 @@ namespace KitaFramework
             {
                 Addressables.UnloadSceneAsync(handler, UnityEngine.SceneManagement.UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
             }
+            foreach (var handler in m_loadedAssetHandlers.Values)
+            {
+                Addressables.Release(handler);
+            }
+            foreach (var handler in m_loadingAssetHandlers.Values)
+            {
+
+                Addressables.Release(handler);
+            }
+
             m_sceneAssetNameHandlerMaps.Clear();
+            m_loadedAssetHandlers.Clear();
+            m_loadingAssetHandlers.Clear();
         }
     }
 }
