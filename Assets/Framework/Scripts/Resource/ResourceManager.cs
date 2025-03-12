@@ -150,22 +150,26 @@ namespace KitaFramework
 
         public override void Shutdown()
         {
+            // 卸载场景
             foreach (var handler in m_sceneAssetNameHandlerMaps.Values)
             {
                 Addressables.UnloadSceneAsync(handler, UnityEngine.SceneManagement.UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
             }
+            m_sceneAssetNameHandlerMaps.Clear();
+
+            // 释放已加载资产
             foreach (var handler in m_loadedAssetHandlers.Values)
             {
                 Addressables.Release(handler);
             }
+            m_loadedAssetHandlers.Clear();
+
+            // 释放正在加载的资产
             foreach (var handler in m_loadingAssetHandlers.Values)
             {
 
                 Addressables.Release(handler);
             }
-
-            m_sceneAssetNameHandlerMaps.Clear();
-            m_loadedAssetHandlers.Clear();
             m_loadingAssetHandlers.Clear();
         }
     }
