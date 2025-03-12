@@ -27,16 +27,15 @@ namespace KitaFramework
             m_resourceManager = FrameworkEntry.GetManager<ResourceManager>();
         }
 
-        public void OpenUI(string uiPath, string groupName, object data)
+        public void OpenUI(string uiAssetName, string groupName, object data)
         {
             // 创建 UIForm 实例
-            string name = uiPath;
-            UIFormObject uiFormObject = m_objectPool.Spawn(name);
-            if (uiFormObject == null && !m_loadingUIForms.Contains(uiPath))
+            UIFormObject uiFormObject = m_objectPool.Spawn(uiAssetName);
+            if (uiFormObject == null && !m_loadingUIForms.Contains(uiAssetName))
             {
                 // 加载新的对象
-                m_loadingUIForms.Add(uiPath);
-                m_resourceManager.LoadAsset<UIForm>(name, 
+                m_loadingUIForms.Add(uiAssetName);
+                m_resourceManager.LoadAsset<UIForm>(uiAssetName, 
                     new LoadAssetCallbacks(LoadUIFormSuccessCallback, LoadUIFormFailureCallback), 
                     new LoadUIFormData(groupName, data));
             }
