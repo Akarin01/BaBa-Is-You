@@ -8,6 +8,7 @@ namespace KitaFramework
     public class ResourceManager : FrameworkManager
     {
         private Dictionary<string, AsyncOperationHandle<UnityEngine.ResourceManagement.ResourceProviders.SceneInstance>> m_sceneAssetNameHandlerMaps;
+        private EventManager m_eventManager;
 
         protected override void Awake()
         {
@@ -16,8 +17,18 @@ namespace KitaFramework
             m_sceneAssetNameHandlerMaps = new();
         }
 
+        private void Start()
+        {
+            m_eventManager = FrameworkEntry.GetManager<EventManager>();
+        }
+
         public void LoadScene(string sceneAssetName, LoadSceneCallbacks loadSceneCallbacks, object userData)
         {
+            if (m_sceneAssetNameHandlerMaps.ContainsKey(sceneAssetName))
+            {
+                // 如果该场景已经被加载
+                throw new ArgumentException($"Scene {sceneAssetName} has been loaded");
+            }
             var handler = Addressables.LoadSceneAsync(sceneAssetName,
                 UnityEngine.SceneManagement.LoadSceneMode.Additive);
 
@@ -43,7 +54,6 @@ namespace KitaFramework
             }
 
             var handler = m_sceneAssetNameHandlerMaps[sceneAssetName];
-            m_sceneAssetNameHandlerMaps.Remove(sceneAssetName);
 
             Addressables.UnloadSceneAsync(handler, UnityEngine.SceneManagement.UnloadSceneOptions.None)
                 .Completed += (handler) =>
@@ -55,6 +65,10 @@ namespace KitaFramework
                     }
 
                     unloadSceneCallbacks?.LoadSceneSuccessCallback?.Invoke(sceneAssetName, userData);
+
+                    m_sceneAssetNameHandlerMaps.Remove(sceneAssetName);
+
+                    m_eventManager.Fire(UnloadCompleteArgs.EventId, this, new UnloadCompleteArgs(sceneAssetName));
                 };
         }
 

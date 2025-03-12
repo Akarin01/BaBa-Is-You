@@ -41,14 +41,7 @@ namespace KitaFramework
             }
             if (IsSceneLoaded(sceneAssetName))
             {
-                if (allowReload)
-                {
-                    // 重新加载场景
-                }
-                else
-                {
-                    throw new ArgumentException($"Scene {sceneAssetName} has been loaded");
-                }
+                throw new ArgumentException($"Scene {sceneAssetName} has been loaded");
             }
 
             m_loadingSceneAssetNames.Add(sceneAssetName);
@@ -70,6 +63,7 @@ namespace KitaFramework
             m_unloadingSceneAssetNames.Add(sceneAssetName);
             m_resourceManager.UnloadScene(sceneAssetName, m_unloadSceneCallbacks, userData);
         }
+
 
         public bool IsSceneLoaded(string sceneAssetName)
         {
