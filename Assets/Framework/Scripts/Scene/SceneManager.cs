@@ -14,7 +14,6 @@ namespace KitaFramework
         private LoadSceneCallbacks m_loadSceneCallbacks;
         private LoadSceneCallbacks m_unloadSceneCallbacks;
         private ResourceManager m_resourceManager;
-        private EventManager m_eventManager;
 
         protected override void Awake()
         {
@@ -30,7 +29,6 @@ namespace KitaFramework
         private void Start()
         {
             m_resourceManager = FrameworkEntry.GetManager<ResourceManager>();
-            m_eventManager = FrameworkEntry.GetManager<EventManager>();
         }
 
         public void LoadScene(string sceneAssetName, bool allowReload = false, object userData = null)
