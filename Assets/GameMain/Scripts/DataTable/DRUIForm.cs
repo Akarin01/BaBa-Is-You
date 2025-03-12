@@ -4,9 +4,7 @@ namespace BabaIsYou
 {
     public class DRUIForm : DataRowBase
     {
-        private int m_id;
-
-        public override int Id => m_id;
+        public override int Id { get; protected set; }
 
         public string UIName { get; private set; }
 
@@ -19,7 +17,8 @@ namespace BabaIsYou
             string[] datas = line.Split(',');
             bool success = true;
 
-            success &= int.TryParse(datas[1], out m_id);
+            success &= int.TryParse(datas[1], out int id);
+            Id = id;
             UIName = datas[2];
             Path = datas[3];
             GroupName = datas[4];
