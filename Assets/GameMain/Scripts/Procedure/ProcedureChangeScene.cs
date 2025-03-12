@@ -14,7 +14,7 @@ namespace KitaFramework
         {
             base.OnEnter(procedureOwner);
 
-            GameEntry.Event.Subscribe(UnloadCompleteArgs.EventId, OnSceneUnloaded);
+            GameEntry.Event.Subscribe(UnloadSceneCompleteArgs.EventId, OnSceneUnloaded);
 
             nextSceneId = (int)procedureOwner.GetData("NextScene");
             m_gotoMenu = nextSceneId == Config.MENU_SCENE_INDEX;
@@ -57,14 +57,14 @@ namespace KitaFramework
 
         protected internal override void OnExit(IFsm<ProcedureManager> procedureOwner, bool isShutdown)
         {
-            GameEntry.Event.Unsubscribe(UnloadCompleteArgs.EventId, OnSceneUnloaded);
+            GameEntry.Event.Unsubscribe(UnloadSceneCompleteArgs.EventId, OnSceneUnloaded);
 
             base.OnExit(procedureOwner, isShutdown);
         }
 
         private void OnSceneUnloaded(object sender, EventArgs e)
         {
-            UnloadCompleteArgs ue = (UnloadCompleteArgs)e;
+            UnloadSceneCompleteArgs ue = (UnloadSceneCompleteArgs)e;
 
             if (m_unloadFlags.ContainsKey(ue.UnloadedSceneAssetName))
             {

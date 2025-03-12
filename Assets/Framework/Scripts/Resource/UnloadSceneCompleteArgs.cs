@@ -1,14 +1,14 @@
 ﻿namespace KitaFramework
 {
-    public class UnloadCompleteArgs : BaseEventArgs
+    public class UnloadSceneCompleteArgs : BaseEventArgs
     {
-        public static int EventId { get; private set; } = typeof(UnloadCompleteArgs).GetHashCode();
+        public static int EventId { get; private set; } = typeof(UnloadSceneCompleteArgs).GetHashCode();
 
         public override int Id => EventId;
 
         public string UnloadedSceneAssetName { get; private set; }
 
-        public UnloadCompleteArgs(string unloadedSceneAssetName) 
+        public UnloadSceneCompleteArgs(string unloadedSceneAssetName) 
         {
             UnloadedSceneAssetName = unloadedSceneAssetName;
         }
