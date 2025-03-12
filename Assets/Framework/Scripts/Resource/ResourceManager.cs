@@ -49,7 +49,7 @@ namespace KitaFramework
 
             var handler = m_sceneAssetNameHandlerMaps[sceneAssetName];
 
-            Addressables.UnloadSceneAsync(handler, UnityEngine.SceneManagement.UnloadSceneOptions.None)
+            Addressables.UnloadSceneAsync(handler, UnityEngine.SceneManagement.UnloadSceneOptions.UnloadAllEmbeddedSceneObjects)
                 .Completed += (handler) =>
                 {
                     if (handler.Status == AsyncOperationStatus.Failed)
