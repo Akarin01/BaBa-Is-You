@@ -74,7 +74,7 @@ namespace KitaFramework
 
         public override void Shutdown()
         {
-
+            m_sceneAssetNameHandlerMaps.Clear();
         }
     }
 }
