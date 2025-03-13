@@ -12,7 +12,7 @@ namespace KitaFramework
         private List<string> m_loadingSceneAssetNames;
         private List<string> m_unloadingSceneAssetNames;
         private LoadSceneCallbacks m_loadSceneCallbacks;
-        private LoadSceneCallbacks m_unloadSceneCallbacks;
+        private UnloadSceneCallbacks m_unloadSceneCallbacks;
         private ISceneLoader m_sceneLoader;
 
         protected override void Awake()
