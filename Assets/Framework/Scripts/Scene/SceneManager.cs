@@ -103,6 +103,7 @@ namespace KitaFramework
             m_loadingSceneAssetNames.Clear();
             m_unloadingSceneAssetNames.Clear();
 
+            m_sceneLoader = null;
             OnUnloadSceneSuccess = null;
         }
 
