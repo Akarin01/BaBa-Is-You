@@ -58,13 +58,11 @@ namespace KitaFramework
 
             foreach (var handle in handleList)
             {
-                if (handle.IsValid())
-                {
-                    Addressables.Release(handle);
-                }
+                Addressables.Release(handle);
             }
-
+            handleList.Clear();
             m_loadedAssets.Remove(assetName);
+            unloadAssetCallbacks?.UnloadAssetSuccessCallback?.Invoke(assetName, userData);
         }
 
         public void Shutdown()
