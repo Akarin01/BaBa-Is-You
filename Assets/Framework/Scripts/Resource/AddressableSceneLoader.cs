@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
@@ -20,7 +19,8 @@ namespace KitaFramework
             if (m_sceneAssetNameHandlerMaps.ContainsKey(sceneAssetName))
             {
                 // 如果该场景已经被加载
-                throw new ArgumentException($"Scene {sceneAssetName} has been loaded");
+                loadSceneCallbacks?.LoadSceneFailureCallback?.Invoke(sceneAssetName, $"Scene {sceneAssetName} is already loaded", userData);
+                return;
             }
             var handler = Addressables.LoadSceneAsync(sceneAssetName,
                 UnityEngine.SceneManagement.LoadSceneMode.Additive);
@@ -29,7 +29,12 @@ namespace KitaFramework
             {
                 if (handler.Status == AsyncOperationStatus.Failed)
                 {
-                    loadSceneCallbacks?.LoadSceneFailureCallback?.Invoke(sceneAssetName, $"LoadScene {sceneAssetName} failed", userData);
+                    loadSceneCallbacks?.LoadSceneFailureCallback?.Invoke(sceneAssetName, 
+                        handler.OperationException?.Message ?? "Unknown error", userData);
+
+                    // 清理无效句柄
+                    m_sceneAssetNameHandlerMaps.Remove(sceneAssetName);
+                    Addressables.Release(handler);
                     return;
                 }
 
@@ -39,11 +44,12 @@ namespace KitaFramework
             m_sceneAssetNameHandlerMaps.Add(sceneAssetName, handler);
         }
 
-        public void UnloadScene(string sceneAssetName, LoadSceneCallbacks unloadSceneCallbacks, object userData)
+        public void UnloadScene(string sceneAssetName, UnloadSceneCallbacks unloadSceneCallbacks, object userData)
         {
             if (!m_sceneAssetNameHandlerMaps.ContainsKey(sceneAssetName))
             {
-                throw new ArgumentException($"Scene {sceneAssetName} hasn't been loaded");
+                unloadSceneCallbacks?.UnloadSceneFailureCallback?.Invoke(sceneAssetName, $"{sceneAssetName} is not loaded", userData);
+                return;
             }
 
             var handler = m_sceneAssetNameHandlerMaps[sceneAssetName];
@@ -53,13 +59,15 @@ namespace KitaFramework
                 {
                     if (handler.Status == AsyncOperationStatus.Failed)
                     {
-                        unloadSceneCallbacks?.LoadSceneFailureCallback?.Invoke(sceneAssetName, $"LoadScene {sceneAssetName} failed", userData);
+                        unloadSceneCallbacks?.UnloadSceneFailureCallback?.Invoke(sceneAssetName,
+                            handler.OperationException?.Message ?? "Unknown error", userData);
                         return;
                     }
 
-                    unloadSceneCallbacks?.LoadSceneSuccessCallback?.Invoke(sceneAssetName, userData);
-
+                    // 成功卸载，清理资源
                     m_sceneAssetNameHandlerMaps.Remove(sceneAssetName);
+                    Addressables.Release(handler);
+                    unloadSceneCallbacks?.UnloadSceneSuccessCallback?.Invoke(sceneAssetName, userData);
                 };
         }
 
