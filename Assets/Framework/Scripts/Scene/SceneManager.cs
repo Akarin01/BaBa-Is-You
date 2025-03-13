@@ -31,7 +31,7 @@ namespace KitaFramework
             m_sceneLoader = FrameworkEntry.GetManager<ResourceManager>().SceneLoader;
         }
 
-        public void LoadScene(string sceneAssetName, bool allowReload = false, object userData = null)
+        public void LoadScene(string sceneAssetName, object userData = null)
         {
             if (IsSceneLoading(sceneAssetName))
             {
