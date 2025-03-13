@@ -60,6 +60,10 @@ namespace KitaFramework
             {
                 throw new ArgumentException($"Scene {sceneAssetName} is unloading");
             }
+            if (!IsSceneLoaded(sceneAssetName))
+            {
+                throw new ArgumentException($"Scene {sceneAssetName} has't been loaded");
+            }
 
             m_loadedSceneAssetNames.Remove(sceneAssetName);
             m_unloadingSceneAssetNames.Add(sceneAssetName);
