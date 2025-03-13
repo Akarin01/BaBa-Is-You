@@ -1,9 +1,4 @@
-﻿using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
-using System.Collections.Generic;
-using System;
-
-namespace KitaFramework
+﻿namespace KitaFramework
 {
     public class ResourceManager : FrameworkManager
     {
