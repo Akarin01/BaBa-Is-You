@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace KitaFramework
 {
