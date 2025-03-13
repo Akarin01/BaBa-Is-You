@@ -5,8 +5,8 @@
     /// </summary>
     public abstract class ObjectBase
     {
-        private object m_target;
-        private string m_name;
+        protected object m_target;
+        protected string m_name;
 
         public object Target { get => m_target; }
         public string Name { get => m_name; }
