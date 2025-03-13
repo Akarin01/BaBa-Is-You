@@ -10,21 +10,19 @@ namespace KitaFramework
 
         private Dictionary<string, UIGroup> m_uiGroups;
         private IObjectPool<UIFormObject> m_objectPool;
-        private IAssetLoader m_assetManager;
-        private HashSet<string> m_loadedUIFormAssetNames;
+        private IAssetLoader m_assetLoader;
 
         protected override void Awake()
         {
             base.Awake();
 
             m_uiGroups = new();
-            m_loadedUIFormAssetNames = new();
         }
 
         private void Start()
         {
             m_objectPool = FrameworkEntry.GetManager<ObjectPoolManager>()?.CreateObjectPool<UIFormObject>();
-            m_assetManager = FrameworkEntry.GetManager<ResourceManager>().AssetLoader;
+            m_assetLoader = FrameworkEntry.GetManager<ResourceManager>().AssetLoader;
         }
 
         public void OpenUI(string uiAssetName, string groupName, object data)
@@ -34,10 +32,9 @@ namespace KitaFramework
             if (uiFormObject == null)
             {
                 // 加载新的对象
-                m_assetManager.LoadAsset<UIForm>(uiAssetName, 
+                m_assetLoader.LoadAsset<UIForm>(uiAssetName, 
                     new LoadAssetCallbacks(LoadUIFormSuccessCallback, LoadUIFormFailureCallback), 
                     new LoadUIFormData(groupName, data));
-                m_loadedUIFormAssetNames.Add(uiAssetName);
             }
             else
             {
@@ -67,14 +64,9 @@ namespace KitaFramework
             }
             m_uiGroups.Clear();
 
-            foreach (var assetNames in m_loadedUIFormAssetNames)
-            {
-                m_assetManager.UnloadAsset(assetNames, null, null);
-            }
-
             FrameworkEntry.GetManager<ObjectPoolManager>()?.DestroyObjectPool<UIFormObject>();
             m_objectPool = null;
-            m_assetManager = null;
+            m_assetLoader = null;
         }
 
         private void AddUIForm(string groupName, UIForm uiForm, object data)
@@ -101,7 +93,7 @@ namespace KitaFramework
         {
             if (asset is not UIForm uiForm)
             {
-                m_assetManager.UnloadAsset(assetName, null, null);
+                m_assetLoader.UnloadAsset(assetName, null, null);
                 Debug.LogError($"{nameof(asset)} is not {typeof(UIForm)}");
                 return;
             }
