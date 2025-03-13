@@ -6,109 +6,83 @@ namespace KitaFramework
 {
     public class AddressableAssetLoader : IAssetLoader
     {
-        private Dictionary<string, AsyncOperationHandle> m_loadedAssetHandlers;
-        private Dictionary<string, AsyncOperationHandle> m_loadingAssetHandlers;
+        private Dictionary<string, List<AsyncOperationHandle>> m_loadedAssets;
 
         public AddressableAssetLoader()
         {
-            m_loadedAssetHandlers = new();
-            m_loadingAssetHandlers = new();
+            m_loadedAssets = new();
         }
 
         public void LoadAsset<TObject>(string assetName, LoadAssetCallbacks loadAssetCallbacks, object userData)
         {
-            if (m_loadedAssetHandlers.TryGetValue(assetName, out var handler))
-            {
-                // 如果该 asset 已经被加载，直接调用回调方法
-                if (handler.Result is TObject)
+            var handle = Addressables.LoadAssetAsync<TObject>(assetName);
+            handle.Completed +=
+                handle =>
                 {
-                    loadAssetCallbacks?.LoadAssetSuccessCallback?.Invoke(assetName, m_loadedAssetHandlers[assetName].Result, userData);
-                }
-                else
-                {
-                    loadAssetCallbacks?.LoadAssetFailureCallback?.Invoke(assetName, $"Asset {assetName} is not {typeof(TObject)}", userData);
-                }
-                return;
-            }
-            if (m_loadingAssetHandlers.TryGetValue(assetName, out handler))
-            {
-                // 如果该 asset 正在被加载，添加回调方法
-                if (handler.IsDone)
-                {
-                    // 已经加载完成，触发回调
-                    loadAssetCallbacks?.LoadAssetSuccessCallback?.Invoke(assetName, handler.Result, userData);
-                }
-                else
-                {
-                    // 还没加载完成，添加回调
-                    handler.Completed +=
-                    handler =>
+                    if (handle.Status == AsyncOperationStatus.Failed)
                     {
-                        if (handler.Status != AsyncOperationStatus.Succeeded)
-                        {
-                            loadAssetCallbacks?.LoadAssetFailureCallback?.Invoke(assetName, $"Fail to load asset {assetName}", userData);
-                            return;
-                        }
-                        loadAssetCallbacks?.LoadAssetSuccessCallback?.Invoke(assetName, handler.Result, userData);
-                    };
-                }
-                return;
-            }
-            // 该 asset 未被加载，异步加载
-            handler = Addressables.LoadAssetAsync<TObject>(assetName);
-            m_loadingAssetHandlers.Add(assetName, handler);
-            handler.Completed +=
-                handler =>
-                {
-                    m_loadingAssetHandlers.Remove(assetName);
-
-                    if (handler.Status != AsyncOperationStatus.Succeeded)
-                    {
-                        loadAssetCallbacks?.LoadAssetFailureCallback?.Invoke(assetName, $"Fail to load asset {assetName}", userData);
+                        // 加载失败
+                        loadAssetCallbacks?.LoadAssetFailureCallback?.Invoke(assetName,
+                            handle.OperationException?.Message ?? $"Unknown error", userData);
+                        Addressables.Release(handle);
                         return;
                     }
-                    loadAssetCallbacks.LoadAssetSuccessCallback?.Invoke(assetName, handler.Result, userData);
-                    m_loadedAssetHandlers.Add(assetName, handler);
+
+                    if (handle.Result is TObject asset)
+                    {
+                        // 加载成功
+                        loadAssetCallbacks?.LoadAssetSuccessCallback?.Invoke(assetName, asset, userData);
+                        if (!m_loadedAssets.ContainsKey(assetName))
+                        {
+                            m_loadedAssets.Add(assetName, new List<AsyncOperationHandle>());
+                        }
+                        m_loadedAssets[assetName].Add(handle);
+                    }
+                    else
+                    {
+                        loadAssetCallbacks?.LoadAssetFailureCallback?.Invoke(assetName,
+                            $"{assetName} is not {typeof(TObject)}", userData);
+                        Addressables.Release(handle);
+                    }
                 };
         }
 
         public void UnloadAsset(string assetName, UnloadAssetCallbacks unloadAssetCallbacks, object userData)
         {
-            if (m_loadedAssetHandlers.TryGetValue(assetName, out var handler))
+            if (!m_loadedAssets.TryGetValue(assetName, out var handleList))
             {
-                // 如果该 asset 已经被加载，卸载
-                Addressables.Release(handler);
-                m_loadedAssetHandlers.Remove(assetName);
-                unloadAssetCallbacks?.UnloadAssetSuccessCallback?.Invoke(assetName, userData);
+                unloadAssetCallbacks?.UnloadAssetFailureCallback(assetName,
+                    $"{ assetName } is not loaded", userData);
                 return;
             }
-            if (m_loadingAssetHandlers.TryGetValue(assetName, out handler))
+
+            foreach (var handle in handleList)
             {
-                // 如果该 asset 正在被加载，卸载
-                Addressables.Release(handler);
-                m_loadingAssetHandlers.Remove(assetName);
-                unloadAssetCallbacks?.UnloadAssetSuccessCallback?.Invoke(assetName, userData);
-                return;
+                if (handle.IsValid())
+                {
+                    Addressables.Release(handle);
+                }
             }
-            // 未加载的 asset
-            unloadAssetCallbacks?.UnloadAssetFailureCallback?.Invoke(assetName, $"Asset {assetName} has not been loaded", userData);
+
+            m_loadedAssets.Remove(assetName);
         }
 
         public void Shutdown()
         {
-            // 释放已加载资产
-            foreach (var handler in m_loadedAssetHandlers.Values)
+            foreach (var handleLinkedList in m_loadedAssets.Values)
             {
-                Addressables.Release(handler);
-            }
-            m_loadedAssetHandlers.Clear();
+                foreach (var handle in handleLinkedList)
+                {
+                    if (handle.IsValid())
+                    {
+                        Addressables.Release(handle);
+                    }
+                }
 
-            // 释放正在加载的资产
-            foreach (var handler in m_loadingAssetHandlers.Values)
-            {
-                Addressables.Release(handler);
+                handleLinkedList.Clear();
             }
-            m_loadingAssetHandlers.Clear();
+
+            m_loadedAssets.Clear();
         }
     }
 }
