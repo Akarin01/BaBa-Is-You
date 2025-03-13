@@ -13,7 +13,7 @@ namespace KitaFramework
         private List<string> m_unloadingSceneAssetNames;
         private LoadSceneCallbacks m_loadSceneCallbacks;
         private LoadSceneCallbacks m_unloadSceneCallbacks;
-        private ResourceManager m_resourceManager;
+        private ISceneLoader m_sceneLoader;
 
         protected override void Awake()
         {
@@ -28,7 +28,7 @@ namespace KitaFramework
 
         private void Start()
         {
-            m_resourceManager = FrameworkEntry.GetManager<ResourceManager>();
+            m_sceneLoader = FrameworkEntry.GetManager<ResourceManager>().SceneLoader;
         }
 
         public void LoadScene(string sceneAssetName, bool allowReload = false, object userData = null)
@@ -47,7 +47,7 @@ namespace KitaFramework
             }
 
             m_loadingSceneAssetNames.Add(sceneAssetName);
-            m_resourceManager.LoadScene(sceneAssetName, m_loadSceneCallbacks, userData);
+            m_sceneLoader.LoadScene(sceneAssetName, m_loadSceneCallbacks, userData);
         }
 
         public void UnloadScene(string sceneAssetName, object userData = null)
@@ -63,7 +63,7 @@ namespace KitaFramework
 
             m_loadedSceneAssetNames.Remove(sceneAssetName);
             m_unloadingSceneAssetNames.Add(sceneAssetName);
-            m_resourceManager.UnloadScene(sceneAssetName, m_unloadSceneCallbacks, userData);
+            m_sceneLoader.UnloadScene(sceneAssetName, m_unloadSceneCallbacks, userData);
         }
 
 
