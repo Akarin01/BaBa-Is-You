@@ -138,7 +138,6 @@ namespace KitaFramework
         {
             var handle = Addressables.LoadAssetAsync<TObject>(assetName);
             yield return handle;
-            yield return new WaitForSeconds(5f);
 
             // 加载完成
             if (handle.Status != AsyncOperationStatus.Succeeded)
