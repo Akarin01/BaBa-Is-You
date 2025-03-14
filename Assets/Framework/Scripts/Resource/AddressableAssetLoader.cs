@@ -1,86 +1,164 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using static UnityEngine.Rendering.VirtualTexturing.Debugging;
 
 namespace KitaFramework
 {
-    public class AddressableAssetLoader : IAssetLoader
+    public class AddressableAssetLoader : AssetLoaderBase
     {
-        private Dictionary<string, List<AsyncOperationHandle>> m_loadedAssets;
+        private class LoadingAssetInfo
+        {
+            public LoadAssetCallbacks LoadAssetCallbacks { get; private set; }
+            public object UserData { get; private set; }
+
+            public LoadingAssetInfo(LoadAssetCallbacks loadAssetCallbacks, object userData)
+            {
+                LoadAssetCallbacks = loadAssetCallbacks;
+                UserData = userData;
+            }
+        }
+
+        private Dictionary<string, AsyncOperationHandle> m_loadedAssets;
+        private Dictionary<string, List<LoadingAssetInfo>> m_loadingAssets;
+        private Dictionary<string, Coroutine> m_loadingCoroutines;
 
         public AddressableAssetLoader()
         {
             m_loadedAssets = new();
+            m_loadingAssets = new();
+            m_loadingCoroutines = new();
         }
 
-        public void LoadAsset<TObject>(string assetName, LoadAssetCallbacks loadAssetCallbacks, object userData)
+        public override void LoadAsset<TObject>(string assetName, LoadAssetCallbacks loadAssetCallbacks, object userData)
         {
-            var handle = Addressables.LoadAssetAsync<TObject>(assetName);
-            handle.Completed +=
-                handle =>
-                {
-                    if (handle.Status == AsyncOperationStatus.Failed)
-                    {
-                        // 加载失败
-                        loadAssetCallbacks?.LoadAssetFailureCallback?.Invoke(assetName,
-                            handle.OperationException?.Message ?? $"Unknown error", userData);
-                        Addressables.Release(handle);
-                        return;
-                    }
-
-                    if (handle.Result is TObject asset)
-                    {
-                        // 加载成功
-                        loadAssetCallbacks?.LoadAssetSuccessCallback?.Invoke(assetName, asset, userData);
-                        if (!m_loadedAssets.ContainsKey(assetName))
-                        {
-                            m_loadedAssets.Add(assetName, new List<AsyncOperationHandle>());
-                        }
-                        m_loadedAssets[assetName].Add(handle);
-                    }
-                    else
-                    {
-                        loadAssetCallbacks?.LoadAssetFailureCallback?.Invoke(assetName,
-                            $"{assetName} is not {typeof(TObject)}", userData);
-                        Addressables.Release(handle);
-                    }
-                };
-        }
-
-        public void UnloadAsset(string assetName, UnloadAssetCallbacks unloadAssetCallbacks, object userData)
-        {
-            if (!m_loadedAssets.TryGetValue(assetName, out var handleList))
+            if (m_loadedAssets.TryGetValue(assetName, out var handle))
             {
-                unloadAssetCallbacks?.UnloadAssetFailureCallback(assetName,
-                    $"{ assetName } is not loaded", userData);
+                // 已经加载过该资源
+                if (handle.Result is not TObject asset)
+                {
+                    // 无法转换到指定类型
+                    loadAssetCallbacks?.LoadAssetFailureCallback?.Invoke(assetName,
+                        $"{assetName} is not {typeof(TObject)}", userData);
+                    Addressables.Release(handle);
+                }
+                else
+                {
+                    // 转换成功
+                    loadAssetCallbacks?.LoadAssetSuccessCallback?.Invoke(assetName,
+                    asset, userData);
+                }
+                return;
+            }
+            if (m_loadingAssets.TryGetValue(assetName, out var loadingAssetInfoList))
+            {
+                // 正在加载该资源，添加加载完成的回调方法
+                var loadingAssetInfo = new LoadingAssetInfo(loadAssetCallbacks, userData);
+                loadingAssetInfoList.Add(loadingAssetInfo);
+
                 return;
             }
 
-            foreach (var handle in handleList)
+            // 还没加载过该资源，加载
+            m_loadingAssets.Add(assetName, new List<LoadingAssetInfo>
             {
-                Addressables.Release(handle);
+                new LoadingAssetInfo(loadAssetCallbacks, userData)
+            });
+
+            var coroutine = StartCoroutine(LoadAssetCO<TObject>(assetName));
+            m_loadingCoroutines.Add(assetName, coroutine);
+        }
+
+        public override void UnloadAsset(string assetName, UnloadAssetCallbacks unloadAssetCallbacks, object userData)
+        {
+            if (!m_loadedAssets.TryGetValue(assetName, out var handle))
+            {
+                unloadAssetCallbacks?.UnloadAssetFailureCallback?.Invoke(assetName,
+                    $"Asset {assetName} is not loaded or already unloaded", userData);
+                return;
             }
-            handleList.Clear();
+
+            Addressables.Release(handle);
             m_loadedAssets.Remove(assetName);
             unloadAssetCallbacks?.UnloadAssetSuccessCallback?.Invoke(assetName, userData);
         }
 
-        public void Shutdown()
+        public override void Shutdown()
         {
-            foreach (var handleLinkedList in m_loadedAssets.Values)
+            foreach (var handle in m_loadedAssets.Values)
             {
-                foreach (var handle in handleLinkedList)
-                {
-                    if (handle.IsValid())
-                    {
-                        Addressables.Release(handle);
-                    }
-                }
+                Addressables.Release(handle);
+            }
+            m_loadedAssets.Clear();
 
-                handleLinkedList.Clear();
+            foreach (var loadingAsset in m_loadingAssets)
+            {
+                string assetName = loadingAsset.Key;
+                var loadingAssetInfoList = loadingAsset.Value;
+                foreach (var loadingAssetInfo in loadingAssetInfoList)
+                {
+                    var loadAssetCallbacks = loadingAssetInfo.LoadAssetCallbacks;
+                    var userData = loadingAssetInfo.UserData;
+                    loadAssetCallbacks?.LoadAssetFailureCallback?.Invoke(assetName,
+                        $"Loading {assetName} is interrupted", userData);
+                }
+                loadingAssetInfoList.Clear();
+            }
+            m_loadingAssets.Clear();
+
+            foreach (var coroutine in m_loadingCoroutines.Values)
+            {
+                StopCoroutine(coroutine);
+            }
+            m_loadingCoroutines.Clear();
+        }
+
+        private IEnumerator LoadAssetCO<TObject>(string assetName)
+        {
+            var handle = Addressables.LoadAssetAsync<TObject>(assetName);
+            yield return handle;
+
+            // 加载完成
+            if (handle.Status != AsyncOperationStatus.Succeeded)
+            {
+                // 加载失败
+                foreach (var loadingAssetInfo in m_loadingAssets[assetName])
+                {
+                    var loadAssetCallbacks = loadingAssetInfo.LoadAssetCallbacks;
+                    var userData = loadingAssetInfo.UserData;
+                    loadAssetCallbacks?.LoadAssetFailureCallback?.Invoke(assetName,
+                        handle.OperationException?.Message ?? "Unknown error", userData);
+                }
+                Addressables.Release(handle);
+                yield break;
+            }
+            // 加载成功
+            if (handle.Result is not TObject asset)
+            {
+                // 无法转换到指定类型
+                foreach (var loadingAssetInfo in m_loadingAssets[assetName])
+                {
+                    var loadAssetCallbacks = loadingAssetInfo.LoadAssetCallbacks;
+                    var userData = loadingAssetInfo.UserData;
+                    loadAssetCallbacks?.LoadAssetFailureCallback?.Invoke(assetName,
+                        $"{assetName} is not {typeof(TObject)}", userData);
+                }
+                Addressables.Release(handle);
+                yield break;
             }
 
-            m_loadedAssets.Clear();
+            foreach (var loadingAssetInfo in m_loadingAssets[assetName])
+            {
+                var loadAssetCallbacks = loadingAssetInfo.LoadAssetCallbacks;
+                var userData = loadingAssetInfo.UserData;
+
+                loadAssetCallbacks?.LoadAssetSuccessCallback?.Invoke(assetName, asset, userData);
+            }
+            m_loadingAssets.Remove(assetName);
+            m_loadingCoroutines.Remove(assetName);
+            m_loadedAssets.Add(assetName, handle);
         }
     }
 }
