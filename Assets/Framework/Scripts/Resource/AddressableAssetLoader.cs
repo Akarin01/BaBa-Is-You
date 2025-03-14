@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using static UnityEngine.Rendering.VirtualTexturing.Debugging;
 
 namespace KitaFramework
 {
@@ -73,16 +72,36 @@ namespace KitaFramework
 
         public override void UnloadAsset(string assetName, UnloadAssetCallbacks unloadAssetCallbacks, object userData)
         {
-            if (!m_loadedAssets.TryGetValue(assetName, out var handle))
+            if (m_loadedAssets.TryGetValue(assetName, out var handle))
             {
-                unloadAssetCallbacks?.UnloadAssetFailureCallback?.Invoke(assetName,
-                    $"Asset {assetName} is not loaded or already unloaded", userData);
+                // 资源已被加载，卸载
+                Addressables.Release(handle);
+                m_loadedAssets.Remove(assetName);
+                unloadAssetCallbacks?.UnloadAssetSuccessCallback?.Invoke(assetName, userData);
                 return;
             }
 
-            Addressables.Release(handle);
-            m_loadedAssets.Remove(assetName);
-            unloadAssetCallbacks?.UnloadAssetSuccessCallback?.Invoke(assetName, userData);
+            if (m_loadingAssets.TryGetValue(assetName, out var loadingAssetInfoList))
+            {
+                // 资源正在加载，打断加载
+                StopCoroutine(m_loadingCoroutines[assetName]);
+                m_loadingCoroutines.Remove(assetName);
+                foreach (var loadingAssetInfo in loadingAssetInfoList)
+                {
+                    var loadAssetCallbacks = loadingAssetInfo.LoadAssetCallbacks;
+                    var loadUserData = loadingAssetInfo.UserData;
+                    loadAssetCallbacks?.LoadAssetFailureCallback?.Invoke(assetName,
+                        $"Loading {assetName} is interrupted", loadUserData);
+                }
+                loadingAssetInfoList.Clear();
+                m_loadingAssets.Remove(assetName);
+                unloadAssetCallbacks?.UnloadAssetSuccessCallback?.Invoke(assetName, userData);
+                return;
+            }
+
+            // 资源没被加载
+            unloadAssetCallbacks?.UnloadAssetFailureCallback?.Invoke(assetName,
+                    $"Asset {assetName} is not loaded or already unloaded", userData);
         }
 
         public override void Shutdown()
@@ -92,6 +111,12 @@ namespace KitaFramework
                 Addressables.Release(handle);
             }
             m_loadedAssets.Clear();
+
+            foreach (var coroutine in m_loadingCoroutines.Values)
+            {
+                StopCoroutine(coroutine);
+            }
+            m_loadingCoroutines.Clear();
 
             foreach (var loadingAsset in m_loadingAssets)
             {
@@ -107,18 +132,13 @@ namespace KitaFramework
                 loadingAssetInfoList.Clear();
             }
             m_loadingAssets.Clear();
-
-            foreach (var coroutine in m_loadingCoroutines.Values)
-            {
-                StopCoroutine(coroutine);
-            }
-            m_loadingCoroutines.Clear();
         }
 
         private IEnumerator LoadAssetCO<TObject>(string assetName)
         {
             var handle = Addressables.LoadAssetAsync<TObject>(assetName);
             yield return handle;
+            yield return new WaitForSeconds(5f);
 
             // 加载完成
             if (handle.Status != AsyncOperationStatus.Succeeded)
