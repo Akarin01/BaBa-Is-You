@@ -9,6 +9,7 @@ namespace KitaFramework
         private class LoadingAssetInfo
         {
             public Coroutine Coroutine { get; set; }
+            public AsyncOperationHandle Handle { get; set; }
 
             private List<LoadAssetCallbacks> m_loadAssetCallbacksList = new();
             private List<object> m_userDataList = new();
