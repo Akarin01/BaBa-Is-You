@@ -68,10 +68,13 @@ namespace KitaFramework
             {
                 // 资源正在加载，打断加载
                 StopCoroutine(loadingAssetInfo.Coroutine);
+                Addressables.Release(loadingAssetInfo.Handle);
                 loadingAssetInfo.InvokeFailureCallbacks(assetName, 
                     $"Loading {assetName} is interrupted");
+                // 从 loadingAssets 中移除
                 loadingAssetInfo.Release();
                 m_loadingAssets.Remove(assetName);
+
                 unloadAssetCallbacks?.UnloadAssetSuccessCallback?.Invoke(assetName, userData);
                 return;
             }
@@ -93,6 +96,9 @@ namespace KitaFramework
             {
                 var assetName = loadingAsset.Key;
                 var loadingAssetInfo = loadingAsset.Value;
+                // 打断加载
+                StopCoroutine(loadingAssetInfo.Coroutine);
+                Addressables.Release(loadingAssetInfo.Handle);
                 loadingAssetInfo.InvokeFailureCallbacks(assetName, 
                     $"Loading {assetName} is interrupted");
                 loadingAssetInfo.Release();
@@ -103,15 +109,19 @@ namespace KitaFramework
         private IEnumerator LoadAssetCO<TObject>(string assetName)
         {
             var handle = Addressables.LoadAssetAsync<TObject>(assetName);
+            m_loadingAssets[assetName].Handle = handle;
             yield return handle;
-            yield return new WaitForSeconds(5f);
 
             // 加载完成
+            var loadingAssetInfo = m_loadingAssets[assetName];
+            m_loadingAssets.Remove(assetName);
+
             if (handle.Status != AsyncOperationStatus.Succeeded)
             {
                 // 加载失败
-                m_loadingAssets[assetName].InvokeFailureCallbacks(assetName, 
+                loadingAssetInfo.InvokeFailureCallbacks(assetName, 
                     handle.OperationException?.Message ?? "Unknown error");
+                loadingAssetInfo.Release();
                 Addressables.Release(handle);
                 yield break;
             }
@@ -119,14 +129,15 @@ namespace KitaFramework
             if (handle.Result is not TObject asset)
             {
                 // 无法转换到指定类型
-                m_loadingAssets[assetName].InvokeFailureCallbacks(assetName,
+                loadingAssetInfo.InvokeFailureCallbacks(assetName,
                     $"{assetName} is not {typeof(TObject)}");
+                loadingAssetInfo.Release();
                 Addressables.Release(handle);
                 yield break;
             }
 
-            m_loadingAssets[assetName].InvokeSuccessCallbacks(assetName, asset);
-            m_loadingAssets.Remove(assetName);
+            loadingAssetInfo.InvokeSuccessCallbacks(assetName, asset);
+            loadingAssetInfo.Release();
             m_loadedAssets.Add(assetName, handle);
         }
     }
