@@ -10,13 +10,15 @@ namespace KitaFramework
 
         private Dictionary<string, UIGroup> m_uiGroups;
         private IObjectPool<UIFormObject> m_objectPool;
-        private IAssetLoader m_assetLoader;
+        private AssetLoaderBase m_assetLoader;
+        private HashSet<string> m_loadedAssetNames;
 
         protected override void Awake()
         {
             base.Awake();
 
             m_uiGroups = new();
+            m_loadedAssetNames = new();
         }
 
         private void Start()
@@ -32,7 +34,8 @@ namespace KitaFramework
             if (uiFormObject == null)
             {
                 // 加载新的对象
-                m_assetLoader.LoadAsset<UIForm>(uiAssetName, 
+                m_loadedAssetNames.Add(uiAssetName);
+                m_assetLoader.LoadAsset<GameObject>(uiAssetName, 
                     new LoadAssetCallbacks(LoadUIFormSuccessCallback, LoadUIFormFailureCallback), 
                     new LoadUIFormData(groupName, data));
             }
@@ -56,6 +59,7 @@ namespace KitaFramework
             m_objectPool.Unspawn(uiForm);
         }
 
+        [ContextMenu("Shutdown")]
         public override void Shutdown()
         {
             foreach (var uiGroup in m_uiGroups)
@@ -66,6 +70,12 @@ namespace KitaFramework
 
             FrameworkEntry.GetManager<ObjectPoolManager>()?.DestroyObjectPool<UIFormObject>();
             m_objectPool = null;
+
+            foreach (var loadedAssetName in m_loadedAssetNames)
+            {
+                m_assetLoader.UnloadAsset(loadedAssetName, null, null);
+            }
+            m_loadedAssetNames.Clear();
             m_assetLoader = null;
         }
 
@@ -91,10 +101,10 @@ namespace KitaFramework
 
         private void LoadUIFormSuccessCallback(string assetName, object asset, object userData)
         {
-            if (asset is not UIForm uiForm)
+            if (asset is not GameObject go)
             {
                 m_assetLoader.UnloadAsset(assetName, null, null);
-                Debug.LogError($"{nameof(asset)} is not {typeof(UIForm)}");
+                Debug.LogError($"{nameof(asset)} is not {typeof(GameObject)}");
                 return;
             }
             if (userData is not LoadUIFormData data)
@@ -103,7 +113,8 @@ namespace KitaFramework
                 return;
             }
 
-            uiForm = Instantiate(uiForm, m_uiFormInstancesRoot);
+            GameObject uiFormInstance = Instantiate(go, m_uiFormInstancesRoot);
+            UIForm uiForm = uiFormInstance.GetComponent<UIForm>();
             uiForm.OnInit(data.GroupName);
             UIFormObject uiFormObject = new UIFormObject(uiForm, assetName);
             m_objectPool.Register(uiFormObject, true);
