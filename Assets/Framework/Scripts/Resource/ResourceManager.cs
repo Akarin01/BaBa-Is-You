@@ -1,17 +1,16 @@
-﻿namespace KitaFramework
+﻿using UnityEngine;
+
+namespace KitaFramework
 {
     public class ResourceManager : FrameworkManager
     {
-        public ISceneLoader SceneLoader { get; private set; }
-        public IAssetLoader AssetLoader { get; private set; }
+        [field: SerializeField] public SceneLoaderBase SceneLoader { get; private set; }
+        [field: SerializeField] public AssetLoaderBase AssetLoader { get; private set; }
 
 
         protected override void Awake()
         {
             base.Awake();
-
-            SceneLoader = new AddressableSceneLoader();
-            AssetLoader = new AddressableAssetLoader();
         }
 
         public override void Shutdown()

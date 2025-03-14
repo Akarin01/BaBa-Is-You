@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 
 namespace KitaFramework
 {
-    public class AddressableSceneLoader : ISceneLoader
+    public class AddressableSceneLoader : SceneLoaderBase
     {
         private Dictionary<string, AsyncOperationHandle<SceneInstance>> m_sceneAssetNameHandlerMaps;
 
@@ -14,7 +15,7 @@ namespace KitaFramework
             m_sceneAssetNameHandlerMaps = new();
         }
 
-        public void LoadScene(string sceneAssetName, LoadSceneCallbacks loadSceneCallbacks, object userData)
+        public override void LoadScene(string sceneAssetName, LoadSceneCallbacks loadSceneCallbacks, object userData)
         {
             if (m_sceneAssetNameHandlerMaps.ContainsKey(sceneAssetName))
             {
@@ -44,7 +45,7 @@ namespace KitaFramework
             m_sceneAssetNameHandlerMaps.Add(sceneAssetName, handler);
         }
 
-        public void UnloadScene(string sceneAssetName, UnloadSceneCallbacks unloadSceneCallbacks, object userData)
+        public override void UnloadScene(string sceneAssetName, UnloadSceneCallbacks unloadSceneCallbacks, object userData)
         {
             if (!m_sceneAssetNameHandlerMaps.ContainsKey(sceneAssetName))
             {
@@ -71,7 +72,7 @@ namespace KitaFramework
                 };
         }
 
-        public void Shutdown()
+        public override void Shutdown()
         {
             // 卸载场景
             foreach (var handler in m_sceneAssetNameHandlerMaps.Values)
