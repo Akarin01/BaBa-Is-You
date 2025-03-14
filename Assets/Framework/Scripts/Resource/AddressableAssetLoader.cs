@@ -6,29 +6,15 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace KitaFramework
 {
-    public class AddressableAssetLoader : AssetLoaderBase
+    public partial class AddressableAssetLoader : AssetLoaderBase
     {
-        private class LoadingAssetInfo
-        {
-            public LoadAssetCallbacks LoadAssetCallbacks { get; private set; }
-            public object UserData { get; private set; }
-
-            public LoadingAssetInfo(LoadAssetCallbacks loadAssetCallbacks, object userData)
-            {
-                LoadAssetCallbacks = loadAssetCallbacks;
-                UserData = userData;
-            }
-        }
-
         private Dictionary<string, AsyncOperationHandle> m_loadedAssets;
-        private Dictionary<string, List<LoadingAssetInfo>> m_loadingAssets;
-        private Dictionary<string, Coroutine> m_loadingCoroutines;
+        private Dictionary<string, LoadingAssetInfo> m_loadingAssets;
 
         public AddressableAssetLoader()
         {
             m_loadedAssets = new();
             m_loadingAssets = new();
-            m_loadingCoroutines = new();
         }
 
         public override void LoadAsset<TObject>(string assetName, LoadAssetCallbacks loadAssetCallbacks, object userData)
@@ -51,23 +37,20 @@ namespace KitaFramework
                 }
                 return;
             }
-            if (m_loadingAssets.TryGetValue(assetName, out var loadingAssetInfoList))
+            if (m_loadingAssets.TryGetValue(assetName, out var loadingAssetInfo))
             {
                 // 正在加载该资源，添加加载完成的回调方法
-                var loadingAssetInfo = new LoadingAssetInfo(loadAssetCallbacks, userData);
-                loadingAssetInfoList.Add(loadingAssetInfo);
+                loadingAssetInfo.AddCallback(loadAssetCallbacks, userData);
 
                 return;
             }
 
             // 还没加载过该资源，加载
-            m_loadingAssets.Add(assetName, new List<LoadingAssetInfo>
-            {
-                new LoadingAssetInfo(loadAssetCallbacks, userData)
-            });
+            loadingAssetInfo = new();
+            loadingAssetInfo.AddCallback(loadAssetCallbacks, userData);
+            m_loadingAssets.Add(assetName, loadingAssetInfo);
 
-            var coroutine = StartCoroutine(LoadAssetCO<TObject>(assetName));
-            m_loadingCoroutines.Add(assetName, coroutine);
+            loadingAssetInfo.Coroutine = StartCoroutine(LoadAssetCO<TObject>(assetName));
         }
 
         public override void UnloadAsset(string assetName, UnloadAssetCallbacks unloadAssetCallbacks, object userData)
@@ -81,19 +64,13 @@ namespace KitaFramework
                 return;
             }
 
-            if (m_loadingAssets.TryGetValue(assetName, out var loadingAssetInfoList))
+            if (m_loadingAssets.TryGetValue(assetName, out var loadingAssetInfo))
             {
                 // 资源正在加载，打断加载
-                StopCoroutine(m_loadingCoroutines[assetName]);
-                m_loadingCoroutines.Remove(assetName);
-                foreach (var loadingAssetInfo in loadingAssetInfoList)
-                {
-                    var loadAssetCallbacks = loadingAssetInfo.LoadAssetCallbacks;
-                    var loadUserData = loadingAssetInfo.UserData;
-                    loadAssetCallbacks?.LoadAssetFailureCallback?.Invoke(assetName,
-                        $"Loading {assetName} is interrupted", loadUserData);
-                }
-                loadingAssetInfoList.Clear();
+                StopCoroutine(loadingAssetInfo.Coroutine);
+                loadingAssetInfo.InvokeFailureCallbacks(assetName, 
+                    $"Loading {assetName} is interrupted");
+                loadingAssetInfo.Release();
                 m_loadingAssets.Remove(assetName);
                 unloadAssetCallbacks?.UnloadAssetSuccessCallback?.Invoke(assetName, userData);
                 return;
@@ -112,24 +89,13 @@ namespace KitaFramework
             }
             m_loadedAssets.Clear();
 
-            foreach (var coroutine in m_loadingCoroutines.Values)
-            {
-                StopCoroutine(coroutine);
-            }
-            m_loadingCoroutines.Clear();
-
             foreach (var loadingAsset in m_loadingAssets)
             {
-                string assetName = loadingAsset.Key;
-                var loadingAssetInfoList = loadingAsset.Value;
-                foreach (var loadingAssetInfo in loadingAssetInfoList)
-                {
-                    var loadAssetCallbacks = loadingAssetInfo.LoadAssetCallbacks;
-                    var userData = loadingAssetInfo.UserData;
-                    loadAssetCallbacks?.LoadAssetFailureCallback?.Invoke(assetName,
-                        $"Loading {assetName} is interrupted", userData);
-                }
-                loadingAssetInfoList.Clear();
+                var assetName = loadingAsset.Key;
+                var loadingAssetInfo = loadingAsset.Value;
+                loadingAssetInfo.InvokeFailureCallbacks(assetName, 
+                    $"Loading {assetName} is interrupted");
+                loadingAssetInfo.Release();
             }
             m_loadingAssets.Clear();
         }
@@ -138,18 +104,14 @@ namespace KitaFramework
         {
             var handle = Addressables.LoadAssetAsync<TObject>(assetName);
             yield return handle;
+            yield return new WaitForSeconds(5f);
 
             // 加载完成
             if (handle.Status != AsyncOperationStatus.Succeeded)
             {
                 // 加载失败
-                foreach (var loadingAssetInfo in m_loadingAssets[assetName])
-                {
-                    var loadAssetCallbacks = loadingAssetInfo.LoadAssetCallbacks;
-                    var userData = loadingAssetInfo.UserData;
-                    loadAssetCallbacks?.LoadAssetFailureCallback?.Invoke(assetName,
-                        handle.OperationException?.Message ?? "Unknown error", userData);
-                }
+                m_loadingAssets[assetName].InvokeFailureCallbacks(assetName, 
+                    handle.OperationException?.Message ?? "Unknown error");
                 Addressables.Release(handle);
                 yield break;
             }
@@ -157,26 +119,14 @@ namespace KitaFramework
             if (handle.Result is not TObject asset)
             {
                 // 无法转换到指定类型
-                foreach (var loadingAssetInfo in m_loadingAssets[assetName])
-                {
-                    var loadAssetCallbacks = loadingAssetInfo.LoadAssetCallbacks;
-                    var userData = loadingAssetInfo.UserData;
-                    loadAssetCallbacks?.LoadAssetFailureCallback?.Invoke(assetName,
-                        $"{assetName} is not {typeof(TObject)}", userData);
-                }
+                m_loadingAssets[assetName].InvokeFailureCallbacks(assetName,
+                    $"{assetName} is not {typeof(TObject)}");
                 Addressables.Release(handle);
                 yield break;
             }
 
-            foreach (var loadingAssetInfo in m_loadingAssets[assetName])
-            {
-                var loadAssetCallbacks = loadingAssetInfo.LoadAssetCallbacks;
-                var userData = loadingAssetInfo.UserData;
-
-                loadAssetCallbacks?.LoadAssetSuccessCallback?.Invoke(assetName, asset, userData);
-            }
+            m_loadingAssets[assetName].InvokeSuccessCallbacks(assetName, asset);
             m_loadingAssets.Remove(assetName);
-            m_loadingCoroutines.Remove(assetName);
             m_loadedAssets.Add(assetName, handle);
         }
     }
