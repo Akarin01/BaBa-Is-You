@@ -59,7 +59,6 @@ namespace KitaFramework
             m_objectPool.Unspawn(uiForm);
         }
 
-        [ContextMenu("Shutdown")]
         public override void Shutdown()
         {
             foreach (var uiGroup in m_uiGroups)
