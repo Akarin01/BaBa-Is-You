@@ -7,10 +7,13 @@ namespace KitaFramework
 {
     public class ProcedureManager : FrameworkManager
     {
-        [SerializeField] private string m_startProcedureName;
+        [SerializeField] private string[] m_availableProcedureTypeNames;
+        [SerializeField] private string m_entranceProcedureTypeName;
 
         private IFsm<ProcedureManager> m_procedureFsm;
         private FsmManager m_fsmManager;
+
+        public ProcedureBase CurrentProcedure => (ProcedureBase)m_procedureFsm.CurrentState;
 
         protected override void Awake()
         {
@@ -21,52 +24,48 @@ namespace KitaFramework
         {
             m_fsmManager = FrameworkEntry.GetManager<FsmManager>();
 
-            // 通过反射获取并创建 ProcedureBase 的所有基类
-            Type[] procedureTypes = GetProceduraTypes();
-            ProcedureBase[] procedureBases = new ProcedureBase[procedureTypes.Length];
-            for (int i = 0; i < procedureTypes.Length; i++)
+            // 创建可使用的流程子类的实例
+            ProcedureBase[] procedureBases = new ProcedureBase[m_availableProcedureTypeNames.Length];
+            ProcedureBase entranceProcedure = null;
+            for (int i = 0; i < procedureBases.Length; i++)
             {
-                Debug.Log(procedureTypes[i]);
-                procedureBases[i] = (ProcedureBase)Activator.CreateInstance(procedureTypes[i]);
+                // 实例化子类
+                Type procedureType = Type.GetType(m_availableProcedureTypeNames[i]);
+                if (procedureType == null)
+                {
+                    Debug.LogError($"Can't find type {m_availableProcedureTypeNames[i]}");
+                    yield break;
+                }
+
+                procedureBases[i] = Activator.CreateInstance(procedureType) as ProcedureBase;
+                if (procedureBases[i] == null)
+                {
+                    Debug.LogError($"Can't create instance of {procedureType}");
+                    yield break;
+                }
+
+                if (m_entranceProcedureTypeName == m_availableProcedureTypeNames[i])
+                {
+                    entranceProcedure = procedureBases[i];
+                }
             }
             m_procedureFsm = m_fsmManager.CreateFsm(this, null, procedureBases);
 
             yield return new WaitForEndOfFrame();
 
             // 启动流程
-            if (procedureTypes.Length == 0)
+            if (entranceProcedure == null)
             {
-                Debug.LogError("There are no subclass of ProcedureBase");
+                Debug.LogError("Entrance procedure is invalid");
                 yield break;
             }
 
-            StartProcedure(Type.GetType(m_startProcedureName));
+            StartProcedure(entranceProcedure.GetType());
         }
 
         public override void Shutdown()
         {
             m_fsmManager.RemoveFsm<IFsm<ProcedureManager>>(m_procedureFsm.Name);
-        }
-
-        private Type[] GetProceduraTypes()
-        {
-            System.Reflection.Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-
-            List<Type> procedureTypes = new();
-
-            foreach (var assembly in assemblies)
-            {
-                Type[] types = assembly.GetTypes();
-                foreach (var type in types)
-                {
-                    if (type.IsSubclassOf(typeof(ProcedureBase)) && !type.IsAbstract)
-                    {
-                        procedureTypes.Add(type);
-                    }
-                }
-            }
-
-            return procedureTypes.ToArray();
         }
 
         private void StartProcedure<TProcedure>() where TProcedure : ProcedureBase

@@ -1,8 +1,8 @@
-﻿using BabaIsYou;
+﻿using KitaFramework;
 using System;
 using System.Collections.Generic;
 
-namespace KitaFramework
+namespace BabaIsYou
 {
     public class ProcedureChangeScene : ProcedureBase
     {

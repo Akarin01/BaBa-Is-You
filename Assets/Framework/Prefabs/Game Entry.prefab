@@ -31,7 +31,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3301280296588431998}
-  m_RootOrder: 4
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1452579421
 MonoBehaviour:
@@ -98,7 +98,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3301280296588431998}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2397557569248321746
 MonoBehaviour:
@@ -112,7 +112,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58af284ecd267224c8250af68731f247, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_startProcedureName: BabaIsYou.ProcedureLauncher
+  m_availableProcedureTypeNames:
+  - BabaIsYou.ProcedureChangeScene
+  - BabaIsYou.ProcedureLauncher
+  - BabaIsYou.ProcedureMain
+  - BabaIsYou.ProcedureMenu
+  - BabaIsYou.ProcedureWin
+  m_entranceProcedureTypeName: 
 --- !u!1 &2006714650156901879
 GameObject:
   m_ObjectHideFlags: 0
@@ -187,7 +193,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3301280296588431998}
-  m_RootOrder: 8
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3255843014274438387
 MonoBehaviour:
@@ -231,7 +237,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3301280296588431998}
-  m_RootOrder: 5
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5255286809666179889
 MonoBehaviour:
@@ -276,7 +282,7 @@ Transform:
   m_Children:
   - {fileID: 1014975900631477724}
   m_Father: {fileID: 3301280296588431998}
-  m_RootOrder: 0
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3301280295151425184
 MonoBehaviour:
@@ -320,15 +326,15 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3301280295151425191}
-  - {fileID: 7659392940160861170}
-  - {fileID: 5268672422917547282}
-  - {fileID: 2285362927533175054}
-  - {fileID: 1452579422}
-  - {fileID: 7874376182807614353}
   - {fileID: 8393208136691401320}
+  - {fileID: 7874376182807614353}
+  - {fileID: 5268672422917547282}
+  - {fileID: 7659392940160861170}
+  - {fileID: 2285362927533175054}
   - {fileID: 7730151404582460910}
   - {fileID: 147741003588365545}
+  - {fileID: 3301280295151425191}
+  - {fileID: 1452579422}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -374,7 +380,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3301280296588431998}
-  m_RootOrder: 6
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2493023391005756224
 MonoBehaviour:
@@ -464,7 +470,7 @@ Transform:
   - {fileID: 3909636167939126444}
   - {fileID: 5578439847436456229}
   m_Father: {fileID: 3301280296588431998}
-  m_RootOrder: 7
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5566357184700354239
 MonoBehaviour:
@@ -510,7 +516,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3301280296588431998}
-  m_RootOrder: 1
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8876590392288268560
 MonoBehaviour:

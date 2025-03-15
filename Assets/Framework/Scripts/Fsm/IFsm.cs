@@ -19,6 +19,11 @@ namespace KitaFramework
         public string Name { get; }
 
         /// <summary>
+        /// 当前的状态
+        /// </summary>
+        public FsmState<T> CurrentState { get; }
+
+        /// <summary>
         /// 以某个状态开始状态机
         /// </summary>
         /// <typeparam name="TState">初始的状态类型</typeparam>

@@ -16,6 +16,8 @@ namespace KitaFramework
 
         public string Name => m_name;
 
+        public FsmState<T> CurrentState => m_currentState;
+
         public override bool IsRunning => m_isRunning;
 
         public Fsm(T owner, string name, params FsmState<T>[] states)
