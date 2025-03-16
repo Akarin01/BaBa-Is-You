@@ -37,6 +37,18 @@ MonoBehaviour:
     m_Address: Assets/GameMain/Prefabs/Square.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 19534ed121a52154b828fc0054d9d8bb
+    m_Address: UIForms/MenuForm
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 86f54a20f1b62144eaaad906a612d677
+    m_Address: UIForms/SettingForm
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 279bca8340370f841baf72326787049f
+    m_Address: UIForms/WinForm
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c331c7aca6a46764ca117cf3d981bd46, type: 2}
   m_SchemaSet:
