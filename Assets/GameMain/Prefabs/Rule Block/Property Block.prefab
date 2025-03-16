@@ -364,3 +364,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0064c271493fbe840b5f09dada2c518e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_logicType: BabaIsYou.StopLogic
