@@ -7,6 +7,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 7473772774707918959, guid: b743dc262887d7f4c8c9193b02828b39, type: 3}
+      propertyPath: m_entity
+      value: 
+      objectReference: {fileID: 5358323985804806502, guid: e686e0ef517079d42ba3d2f6dcc3773d, type: 3}
     - target: {fileID: 8190240894264360673, guid: b743dc262887d7f4c8c9193b02828b39, type: 3}
       propertyPath: m_text
       value: 'WA
