@@ -71,6 +71,11 @@ namespace BabaIsYou
             Event currentEvent = Event.current;
             bool isLeft = currentEvent.button == 0;
 
+            if (m_toolIndex != -1)
+            {
+                Tools.current = Tool.View;      // 强制设置工具为 View，防止工具拦截事件
+            }
+
             switch (m_toolIndex)
             {
                 case 0:
@@ -89,6 +94,7 @@ namespace BabaIsYou
                     break;
                 case 1:
                     // 长按实例化
+
                     if (isLeft &&
                         (currentEvent.type == EventType.MouseDown || currentEvent.type == EventType.MouseDrag))
                     {
