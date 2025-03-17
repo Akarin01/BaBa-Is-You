@@ -41,8 +41,6 @@ namespace BabaIsYou
 
         public static LogicBase GetLogic(string typeStr)
         {
-            string namespaceName = typeof(LogicBase).Namespace;
-            typeStr = string.Concat(namespaceName, ".", typeStr);
             Type t = Type.GetType(typeStr);
             if (t == null)
             {
