@@ -2,6 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 using KitaFramework;
+using System;
 
 namespace BabaIsYou
 {
@@ -16,6 +17,7 @@ namespace BabaIsYou
         private int m_logicIndex = -1;
         private bool m_foldoutNounBlock;
         private bool m_foldoutPropertyBlock;
+        private int m_toolIndex = -1;
 
         [MenuItem("Tools/MapEditorWindow")]
         public static void ShowWindow()
@@ -25,7 +27,14 @@ namespace BabaIsYou
 
         private void OnEnable()
         {
+            SceneView.duringSceneGui += SceneView_DuringSceneGui;
+
             RefreshLogicTypeNames();
+        }
+
+        private void OnDisable()
+        {
+            SceneView.duringSceneGui -= SceneView_DuringSceneGui;
         }
 
         protected override void OnCompileComplete()
@@ -42,6 +51,8 @@ namespace BabaIsYou
 
         protected override void OnGUI()
         {
+            base.OnGUI();
+
             // 工具栏
             DrawToolBarGUI();
 
@@ -53,6 +64,96 @@ namespace BabaIsYou
 
             // 处理拖拽事件
             HandleDragAndDrop();
+        }
+
+        private void SceneView_DuringSceneGui(SceneView obj)
+        {
+            Event currentEvent = Event.current;
+            bool isLeft = currentEvent.button == 0;
+
+            switch (m_toolIndex)
+            {
+                case 0:
+                    // 单击实例化
+                    if (currentEvent.type == EventType.MouseDown && isLeft)
+                    {
+                        // 单击实例化
+                        Vector2 position = GetWorldPosition2D(currentEvent.mousePosition);
+                        if (!HasColliderAtPosition(position, out _))
+                        {
+                            // 该位置没有物体，生成物体
+                            SpawnPrefabAtPosition(position);
+                            currentEvent.Use();
+                        }
+                    }
+                    break;
+                case 1:
+                    // Todo: 长按实例化
+                    break;
+                case 2:
+                    // 删除实体
+                    if (currentEvent.type == EventType.MouseDown && isLeft)
+                    {
+                        // 删除实体
+                        Vector2 position = GetWorldPosition2D(currentEvent.mousePosition);
+                        if (HasColliderAtPosition(position, out var hitGo))
+                        {
+                            // 该位置有物体，销毁物体
+                            Undo.DestroyObjectImmediate(hitGo);
+                            currentEvent.Use();
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            DrawPositionPreview(currentEvent.mousePosition);
+        }
+
+        private void SpawnPrefabAtPosition(Vector2 position)
+        {
+            if (m_selectedIndex < 0 || m_selectedIndex >= m_prefabList.Count)
+            {
+                Debug.LogWarning("Select prefab first");
+                return;
+            }
+
+            var prefab = PrefabUtility.InstantiatePrefab(m_prefabList[m_selectedIndex]) as GameObject;
+            if (prefab == null)
+            {
+                Debug.LogError("Fail to instantiate");
+                return;
+            }
+            prefab.transform.position = position;
+
+            Undo.RegisterCreatedObjectUndo(prefab, "Spawn Prefab");
+        }
+
+        private void DrawPositionPreview(Vector2 mousePosition)
+        {
+            Vector2 worldPos = GetWorldPosition2D(mousePosition);
+
+            Handles.color = Color.cyan;
+            Handles.DrawWireCube(worldPos, Vector2.one);
+
+            // 显示坐标标签
+            GUIStyle style = new GUIStyle();
+            style.normal.textColor = Color.white;
+            Handles.Label(worldPos, $"({worldPos.x:F1}, {worldPos.y:F1})", style);
+        }
+
+        private bool HasColliderAtPosition(Vector2 position, out GameObject hitGo)
+        {
+            Collider2D hit = Physics2D.OverlapPoint(position);
+            hitGo = hit?.gameObject;
+            return hit != null;
+        }
+
+        private Vector2 GetWorldPosition2D(Vector2 mousePosition)
+        {
+            Ray ray = HandleUtility.GUIPointToWorldRay(mousePosition);
+            return Vector2Int.RoundToInt(new Vector2(ray.origin.x, ray.origin.y));
         }
 
         private void DrawPrefabListGUI()
@@ -198,7 +299,35 @@ namespace BabaIsYou
 
         private void DrawToolBarGUI()
         {
-            EditorGUILayout.HelpBox("Tool Bar", MessageType.Info);
+            EditorGUILayout.BeginVertical();
+            GUILayout.Label("Tool Bar: ");
+            string[] toolNames = new string[] { "单次实例化", "持续实例化", "删除实体" };
+            Color originalColor = GUI.color;
+            Color selectedColor = Color.green;
+            EditorGUILayout.BeginHorizontal();
+            for (int i = 0; i < toolNames.Length; i++)
+            {
+                if (m_toolIndex == i)
+                {
+                    GUI.backgroundColor = selectedColor;
+                }
+                if (GUILayout.Button(toolNames[i]))
+                {
+                    if (m_toolIndex == i)
+                    {
+                        // 取消选择
+                        m_toolIndex = -1;
+                    }
+                    else
+                    {
+                        // 选择
+                        m_toolIndex = i;
+                    }
+                }
+                GUI.backgroundColor = originalColor;
+            }
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.EndVertical();
         }
 
         private void HandleDragAndDrop()
@@ -244,7 +373,7 @@ namespace BabaIsYou
                     break;
             }
         }
-    
+
         private void InitSelectedPrefab()
         {
             m_logicIndex = -1;
