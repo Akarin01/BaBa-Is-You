@@ -13,10 +13,6 @@ namespace BabaIsYou
         private Vector2 m_scrollView;
         private Rect m_dropArea;
         private int m_selectedIndex = -1;
-        private string[] m_logicTypeNames;
-        private int m_logicIndex = -1;
-        private bool m_foldoutNounBlock;
-        private bool m_foldoutPropertyBlock;
         private int m_toolIndex = -1;
 
         [MenuItem("Tools/MapEditorWindow")]
@@ -28,25 +24,11 @@ namespace BabaIsYou
         private void OnEnable()
         {
             SceneView.duringSceneGui += SceneView_DuringSceneGui;
-
-            RefreshLogicTypeNames();
         }
 
         private void OnDisable()
         {
             SceneView.duringSceneGui -= SceneView_DuringSceneGui;
-        }
-
-        protected override void OnCompileComplete()
-        {
-            base.OnCompileComplete();
-
-            RefreshLogicTypeNames();
-        }
-
-        private void RefreshLogicTypeNames()
-        {
-            m_logicTypeNames = TypeHelper.GetTypeNames(typeof(LogicBase));
         }
 
         protected override void OnGUI()
@@ -55,9 +37,6 @@ namespace BabaIsYou
 
             // 工具栏
             DrawToolBarGUI();
-
-            // 显示选中的预制体的信息
-            DrawSelectedPrefabInfoGUI();
 
             // 显示存储的预制体
             DrawPrefabListGUI();
@@ -225,7 +204,6 @@ namespace BabaIsYou
                             {
                                 // 选中该元素
                                 m_selectedIndex = i;
-                                InitSelectedPrefab();
                             }
                             else
                             {
@@ -246,73 +224,6 @@ namespace BabaIsYou
                 EditorGUILayout.EndVertical();
             }
             EditorGUILayout.EndFoldoutHeaderGroup();
-        }
-
-        private void DrawSelectedPrefabInfoGUI()
-        {
-            EditorGUILayout.BeginVertical("box");
-
-            if (m_selectedIndex != -1)
-            {
-                GameObject selectedPrefab = m_prefabList[m_selectedIndex];
-                if (selectedPrefab != null)
-                {
-
-                    if (selectedPrefab.TryGetComponent(out NounBlock nounBlock))
-                    {
-                        SerializedObject serializedObject = new(nounBlock);
-                        SerializedProperty m_entity = serializedObject.FindProperty("m_entity");
-
-                        // 显示并设置初始值
-                        m_foldoutNounBlock = EditorGUILayout.BeginFoldoutHeaderGroup(m_foldoutNounBlock, $"{nameof(NounBlock)}: ");
-                        if (m_foldoutNounBlock)
-                        {
-                            EditorGUILayout.BeginHorizontal();
-                            EditorGUILayout.PrefixLabel("Entity: ");
-                            EntityBase newValue = EditorGUILayout.ObjectField(m_entity.objectReferenceValue, typeof(EntityBase), true) as EntityBase;
-                            if (newValue != m_entity.objectReferenceValue)
-                            {
-                                // 更新
-                                m_entity.objectReferenceValue = newValue;
-                            }
-                            EditorGUILayout.EndHorizontal();
-                        }
-                        EditorGUILayout.EndFoldoutHeaderGroup();
-
-                        serializedObject.ApplyModifiedProperties();
-                    }
-
-                    if (selectedPrefab.TryGetComponent(out PropertyBlock propertyBlock))
-                    {
-                        SerializedObject serializedObject = new(propertyBlock);
-                        SerializedProperty m_logicType = serializedObject.FindProperty("m_logicType");
-
-                        // 显示初始值并设置初始值
-                        m_foldoutPropertyBlock = EditorGUILayout.BeginFoldoutHeaderGroup(m_foldoutPropertyBlock, $"{nameof(PropertyBlock)}: ");
-                        if (m_foldoutPropertyBlock)
-                        {
-                            int selectIndex = EditorGUILayout.Popup("LogicType: ", m_logicIndex, m_logicTypeNames);
-
-                            if (selectIndex != m_logicIndex)
-                            {
-                                // 更新
-                                m_logicIndex = selectIndex;
-                                m_logicType.stringValue = m_logicTypeNames[selectIndex];
-                            }
-                        }
-                        EditorGUILayout.EndFoldoutHeaderGroup();
-
-                        serializedObject.ApplyModifiedProperties();
-                    }
-
-                }
-                else
-                {
-                    EditorGUILayout.HelpBox("Select Null", MessageType.Info);
-                }
-            }
-
-            EditorGUILayout.EndVertical();
         }
 
         private void DrawToolBarGUI()
@@ -390,13 +301,6 @@ namespace BabaIsYou
 
                     break;
             }
-        }
-
-        private void InitSelectedPrefab()
-        {
-            m_logicIndex = -1;
-            m_foldoutNounBlock = true;
-            m_foldoutPropertyBlock = true;
         }
     }
 }
