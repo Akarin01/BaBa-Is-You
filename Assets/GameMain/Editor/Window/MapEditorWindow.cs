@@ -2,7 +2,6 @@ using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 using KitaFramework;
-using System;
 
 namespace BabaIsYou
 {
@@ -44,71 +43,20 @@ namespace BabaIsYou
         protected override void OnGUI()
         {
             // 工具栏
-            EditorGUILayout.HelpBox("Tool Bar", MessageType.Info);
+            DrawToolBarGUI();
 
-            // 设置选中的预制体的初始值
-            if (m_selectedIndex != -1)
-            {
-                GameObject selectedPrefab = m_prefabList[m_selectedIndex];
-                if (selectedPrefab != null)
-                {
-                    EditorGUILayout.BeginVertical("box");
-
-                    if (selectedPrefab.TryGetComponent(out NounBlock nounBlock))
-                    {
-                        SerializedObject serializedObject = new(nounBlock);
-                        SerializedProperty m_entity = serializedObject.FindProperty("m_entity");
-
-                        // 显示并设置初始值
-                        m_foldoutNounBlock = EditorGUILayout.BeginFoldoutHeaderGroup(m_foldoutNounBlock, $"{typeof(NounBlock)}: ");
-                        if (m_foldoutNounBlock)
-                        {
-                            EditorGUILayout.BeginHorizontal();
-                            EditorGUILayout.PrefixLabel("Entity: ");
-                            EntityBase newValue = EditorGUILayout.ObjectField(m_entity.objectReferenceValue, typeof(EntityBase), true) as EntityBase;
-                            if (newValue != m_entity.objectReferenceValue)
-                            {
-                                // 更新
-                                m_entity.objectReferenceValue = newValue;
-                            }
-                            EditorGUILayout.EndHorizontal();
-                        }
-                        EditorGUILayout.EndFoldoutHeaderGroup();
-
-                        serializedObject.ApplyModifiedProperties();
-                    }
-                    if (selectedPrefab.TryGetComponent(out PropertyBlock propertyBlock))
-                    {
-                        SerializedObject serializedObject = new(propertyBlock);
-                        SerializedProperty m_logicType = serializedObject.FindProperty("m_logicType");
-                        
-                        // 显示初始值并设置初始值
-                        m_foldoutPropertyBlock = EditorGUILayout.BeginFoldoutHeaderGroup(m_foldoutPropertyBlock, $"{typeof(PropertyBlock)}: ");
-                        if (m_foldoutPropertyBlock)
-                        {
-                            int selectIndex = EditorGUILayout.Popup("LogicType: ", m_logicIndex, m_logicTypeNames);
-
-                            if (selectIndex != m_logicIndex)
-                            {
-                                // 更新
-                                m_logicIndex = selectIndex;
-                                m_logicType.stringValue = m_logicTypeNames[selectIndex];
-                            }
-                        }
-                        EditorGUILayout.EndFoldoutHeaderGroup();
-
-                        serializedObject.ApplyModifiedProperties();
-                    }
-
-                    EditorGUILayout.EndVertical();
-                }
-                else
-                {
-                    EditorGUILayout.HelpBox("Select Null", MessageType.Info);
-                }
-            }
+            // 显示选中的预制体的信息
+            DrawSelectedPrefabInfoGUI();
 
             // 显示存储的预制体
+            DrawPrefabListGUI();
+
+            // 处理拖拽事件
+            HandleDragAndDrop();
+        }
+
+        private void DrawPrefabListGUI()
+        {
             EditorGUILayout.BeginHorizontal();
             m_foldout = EditorGUILayout.BeginFoldoutHeaderGroup(m_foldout, "Prefab List: ");
             if (m_foldout)
@@ -133,6 +81,8 @@ namespace BabaIsYou
                 }
             }
             EditorGUILayout.EndHorizontal();
+
+            // prefab list
             if (m_foldout)
             {
                 EditorGUILayout.BeginVertical("framebox");
@@ -152,8 +102,17 @@ namespace BabaIsYou
                         EditorGUILayout.BeginHorizontal();
                         if (GUILayout.Button("Select", GUILayout.MaxWidth(50f)))
                         {
-                            m_selectedIndex = i;
-                            InitSelectedPrefab();
+                            if (m_selectedIndex != i)
+                            {
+                                // 选中该元素
+                                m_selectedIndex = i;
+                                InitSelectedPrefab();
+                            }
+                            else
+                            {
+                                // 如果本来选中了该元素，取消选择
+                                m_selectedIndex = -1;
+                            }
                         }
                         m_prefabList[i] = EditorGUILayout.ObjectField(m_prefabList[i], typeof(GameObject), false) as GameObject;
                         EditorGUILayout.EndHorizontal();
@@ -168,8 +127,78 @@ namespace BabaIsYou
                 EditorGUILayout.EndVertical();
             }
             EditorGUILayout.EndFoldoutHeaderGroup();
+        }
 
-            HandleDragAndDrop();
+        private void DrawSelectedPrefabInfoGUI()
+        {
+            EditorGUILayout.BeginVertical("box");
+
+            if (m_selectedIndex != -1)
+            {
+                GameObject selectedPrefab = m_prefabList[m_selectedIndex];
+                if (selectedPrefab != null)
+                {
+
+                    if (selectedPrefab.TryGetComponent(out NounBlock nounBlock))
+                    {
+                        SerializedObject serializedObject = new(nounBlock);
+                        SerializedProperty m_entity = serializedObject.FindProperty("m_entity");
+
+                        // 显示并设置初始值
+                        m_foldoutNounBlock = EditorGUILayout.BeginFoldoutHeaderGroup(m_foldoutNounBlock, $"{nameof(NounBlock)}: ");
+                        if (m_foldoutNounBlock)
+                        {
+                            EditorGUILayout.BeginHorizontal();
+                            EditorGUILayout.PrefixLabel("Entity: ");
+                            EntityBase newValue = EditorGUILayout.ObjectField(m_entity.objectReferenceValue, typeof(EntityBase), true) as EntityBase;
+                            if (newValue != m_entity.objectReferenceValue)
+                            {
+                                // 更新
+                                m_entity.objectReferenceValue = newValue;
+                            }
+                            EditorGUILayout.EndHorizontal();
+                        }
+                        EditorGUILayout.EndFoldoutHeaderGroup();
+
+                        serializedObject.ApplyModifiedProperties();
+                    }
+
+                    if (selectedPrefab.TryGetComponent(out PropertyBlock propertyBlock))
+                    {
+                        SerializedObject serializedObject = new(propertyBlock);
+                        SerializedProperty m_logicType = serializedObject.FindProperty("m_logicType");
+
+                        // 显示初始值并设置初始值
+                        m_foldoutPropertyBlock = EditorGUILayout.BeginFoldoutHeaderGroup(m_foldoutPropertyBlock, $"{nameof(PropertyBlock)}: ");
+                        if (m_foldoutPropertyBlock)
+                        {
+                            int selectIndex = EditorGUILayout.Popup("LogicType: ", m_logicIndex, m_logicTypeNames);
+
+                            if (selectIndex != m_logicIndex)
+                            {
+                                // 更新
+                                m_logicIndex = selectIndex;
+                                m_logicType.stringValue = m_logicTypeNames[selectIndex];
+                            }
+                        }
+                        EditorGUILayout.EndFoldoutHeaderGroup();
+
+                        serializedObject.ApplyModifiedProperties();
+                    }
+
+                }
+                else
+                {
+                    EditorGUILayout.HelpBox("Select Null", MessageType.Info);
+                }
+            }
+
+            EditorGUILayout.EndVertical();
+        }
+
+        private void DrawToolBarGUI()
+        {
+            EditorGUILayout.HelpBox("Tool Bar", MessageType.Info);
         }
 
         private void HandleDragAndDrop()
