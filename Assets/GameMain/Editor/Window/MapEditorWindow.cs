@@ -88,7 +88,19 @@ namespace BabaIsYou
                     }
                     break;
                 case 1:
-                    // Todo: 长按实例化
+                    // 长按实例化
+                    if (isLeft &&
+                        (currentEvent.type == EventType.MouseDown || currentEvent.type == EventType.MouseDrag))
+                    {
+                        // 单击实例化
+                        Vector2 position = GetWorldPosition2D(currentEvent.mousePosition);
+                        if (!HasColliderAtPosition(position, out _))
+                        {
+                            // 该位置没有物体，生成物体
+                            SpawnPrefabAtPosition(position);
+                            currentEvent.Use();
+                        }
+                    }
                     break;
                 case 2:
                     // 删除实体
